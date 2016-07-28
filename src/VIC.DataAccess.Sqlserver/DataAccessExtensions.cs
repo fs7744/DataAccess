@@ -8,7 +8,7 @@ namespace VIC.DataAccess
     {
         public static IServiceCollection UseDataAccess(this IServiceCollection service, DbConfig config)
         {
-            service.AddSingleton<IDbManager>(new DbManager(config));
+            service.AddSingleton<IDbManager>(new SqlDbManager(config));
             return service;
         }
     }

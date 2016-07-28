@@ -4,7 +4,6 @@ namespace VIC.DataAccess
     {
         public static ConditionOperater Equal(this string field, string paramter)
         {
-
         }
     }
 }

@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace VIC.DataAccess
 {
@@ -15,6 +18,9 @@ namespace VIC.DataAccess
 
         public CommandType Type { get; set; }
 
-        public IList<DbParameter> SpecialParameters  { get; set; }
+        public Dictionary<string, DbParameter> SpecialParameters { get; set; }
+
+        internal ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>> ParamConverters
+            = new ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>>();
     }
 }

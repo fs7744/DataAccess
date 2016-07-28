@@ -1,5 +1,7 @@
 using System.Data;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace VIC.DataAccess.Abstratiion
 {
@@ -11,7 +13,7 @@ namespace VIC.DataAccess.Abstratiion
 
         T ExecuteScalar<T>(dynamic paramter = null);
 
-        IDataReader ExecuteDataReader(dynamic parameter = null);
+        Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null);
 
         IMultipleReader ExecuteMultiple(dynamic parameter = null);
 

@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.Sqlserver.Core;
 
 namespace VIC.DataAccess.Core
 {
-    public class DbManager : IDbManager
+    public class SqlDbManager : IDbManager
     {
-        public IDictionary<string, DbSql> SqlConfigs { get; private set; }
+        public Dictionary<string, DbSql> SqlConfigs { get; private set; }
 
-        public DbManager(DbConfig config) 
+        public SqlDbManager(DbConfig config) 
         {
             foreach (var item in config.SqlConfigs.Values)
             {
@@ -21,7 +22,8 @@ namespace VIC.DataAccess.Core
 
         public IDataCommand GetCommand(string commandName)
         {
-            throw new NotImplementedException();
+            DbSql sql = null;
+            return SqlConfigs.TryGetValue(commandName, out sql) ? new SqlDataCommand(sql) : null;
         }
     }
 }

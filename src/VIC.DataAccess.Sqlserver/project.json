@@ -5,7 +5,8 @@
   },
   "dependencies": {
     "VIC.DataAccess": "1.0.0",
-    "System.Data.SqlClient": "4.1.0"
+    "System.Data.SqlClient": "4.1.0",
+    "System.ComponentModel.TypeConverter": "4.1.0"
   },
   "frameworks": {
     "netstandard1.6": {
