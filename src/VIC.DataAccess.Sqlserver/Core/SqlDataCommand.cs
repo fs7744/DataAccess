@@ -32,14 +32,20 @@ namespace VIC.DataAccess.Sqlserver.Core
 
         public async Task<T> ExecuteEntityAsync<T>(dynamic paramter = null)
         {
-            var reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter);
-            return ReaderToIEnumerable<T>(reader).FirstOrDefault();
+            DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter);
+            return await reader.NextResultAsync() ? GetReaderConverter(typeof(T))(reader) : default(T);
         }
 
         public async Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null)
         {
             var reader = await ExecuteDataReaderAsync(CommandBehavior.SingleResult, paramter);
-            return ReaderToIEnumerable<T>(reader).ToList();
+            var list = new List<T>();
+            var func = GetReaderConverter(typeof(T));
+            while (await reader.NextResultAsync())
+            {
+                list.Add(func(reader));
+            }
+            return list;
         }
 
         public Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null)
@@ -69,12 +75,6 @@ namespace VIC.DataAccess.Sqlserver.Core
             return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
         }
 
-        private IEnumerable<T> ReaderToIEnumerable<T>(DbDataReader reader)
-        {
-            var func = GetReaderConverter(typeof(T));
-            yield return func(reader);
-        }
-
         private void SetSpecialParameters(List<SqlParameter> paramList)
         {
             var sps = _sql.SpecialParameters;
@@ -95,14 +95,18 @@ namespace VIC.DataAccess.Sqlserver.Core
         private Func<DbDataReader, dynamic> GetReaderConverter(Type type)
         {
             DbDataReader a = null;
-            var b = a.GetColumnSchema();
+            var b = a.GetColumnSchema().GetEnumerator();
             return _sql.ReaderConverters.GetOrAdd(type, t =>
             {
-                type.GetTypeInfo().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(i => i.CanWrite);
+                type.GetTypeInfo().GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(i => i.CanWrite)
+                .Select(i=> Expression.SwitchCase(Expression.Constant(i.Name.GetHashCode()),
+                    Expression.Assign(;
+                Expression.Switch()
                 var r = Expression.Parameter(SqlTypeExtensions.DbDataReaderType, "r");
                 var cols = Expression.Variable(SqlTypeExtensions.DbColumnsType, "cols");
                 var colsAssign = Expression.Assign(cols, Expression.Call(r, "GetColumnSchema", new Type[0]));
-                
+
                 return Expression.Lambda<Func<DbDataReader, dynamic>>(null, r).Compile();
             });
         }
