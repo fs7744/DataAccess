@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Reflection;
 
@@ -11,6 +13,12 @@ namespace VIC.DataAccess.Sqlserver.Core
         public static readonly Type SqlParameterType = typeof(SqlParameter);
         public static readonly Type SqlParameterListType = typeof(List<SqlParameter>);
         public static readonly Type NullableType = typeof(Nullable<>);
+
+        public static readonly Type DbDataReaderType = typeof(DbDataReader);
+
+        public static readonly Type DbColumnsType = typeof(ReadOnlyCollection<DbColumn>);
+
+        
 
         public static readonly Dictionary<Type, DbType> TypeToDbType = new Dictionary<Type, DbType>()
         {

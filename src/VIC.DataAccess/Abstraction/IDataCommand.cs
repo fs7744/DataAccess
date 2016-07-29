@@ -1,4 +1,3 @@
-using System.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Common;
@@ -7,16 +6,16 @@ namespace VIC.DataAccess.Abstratiion
 {
     public interface IDataCommand
     {
-        List<T> ExecuteEntityList<T>(dynamic paramter = null);
+        Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null);
 
-        T ExecuteEntity<T>(dynamic paramter = null);
+        Task<T> ExecuteEntityAsync<T>(dynamic paramter = null);
 
-        T ExecuteScalar<T>(dynamic paramter = null);
+        Task<T> ExecuteScalarAsync<T>(dynamic paramter = null);
 
         Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null);
 
-        IMultipleReader ExecuteMultiple(dynamic parameter = null);
+        Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null);
 
-        void ExecuteBulkCopy<T>(List<T> data) where T : class, new();
+        void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new();
     }
 }

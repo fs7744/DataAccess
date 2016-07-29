@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace VIC.DataAccess
@@ -22,5 +23,8 @@ namespace VIC.DataAccess
 
         internal ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>> ParamConverters
             = new ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>>();
+
+        internal ConcurrentDictionary<Type, Func<DbDataReader, dynamic>> ReaderConverters
+            = new ConcurrentDictionary<Type, Func<DbDataReader, dynamic>>();
     }
 }

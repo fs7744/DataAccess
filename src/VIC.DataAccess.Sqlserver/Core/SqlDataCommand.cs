@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
@@ -19,12 +20,39 @@ namespace VIC.DataAccess.Sqlserver.Core
             _sql = sql;
         }
 
-        public void ExecuteBulkCopy<T>(List<T> data) where T : class, new()
+        public void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
         {
             throw new NotImplementedException();
         }
 
         public Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null)
+        {
+            return ExecuteDataReaderAsync(CommandBehavior.Default);
+        }
+
+        public async Task<T> ExecuteEntityAsync<T>(dynamic paramter = null)
+        {
+            var reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter);
+            return ReaderToIEnumerable<T>(reader).FirstOrDefault();
+        }
+
+        public async Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null)
+        {
+            var reader = await ExecuteDataReaderAsync(CommandBehavior.SingleResult, paramter);
+            return ReaderToIEnumerable<T>(reader).ToList();
+        }
+
+        public Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> ExecuteScalarAsync<T>(dynamic paramter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<DbDataReader> ExecuteDataReaderAsync(CommandBehavior behavior, dynamic parameter = null)
         {
             var conn = new SqlConnection(_sql.ConnectionString);
             var command = conn.CreateCommand();
@@ -36,28 +64,15 @@ namespace VIC.DataAccess.Sqlserver.Core
                 SetSpecialParameters(paramList);
                 command.Parameters.AddRange(paramList.ToArray());
             }
-            return command.ExecuteReaderAsync()
-                .ContinueWith<DbDataReader>(i => i.Result);
+
+            await conn.OpenAsync();
+            return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
         }
 
-        public T ExecuteEntity<T>(dynamic paramter = null)
+        private IEnumerable<T> ReaderToIEnumerable<T>(DbDataReader reader)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<T> ExecuteEntityList<T>(dynamic paramter = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMultipleReader ExecuteMultiple(dynamic parameter = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T ExecuteScalar<T>(dynamic paramter = null)
-        {
-            throw new NotImplementedException();
+            var func = GetReaderConverter(typeof(T));
+            yield return func(reader);
         }
 
         private void SetSpecialParameters(List<SqlParameter> paramList)
@@ -75,6 +90,21 @@ namespace VIC.DataAccess.Sqlserver.Core
                         i.Direction = sp.Direction;
                     });
             }
+        }
+
+        private Func<DbDataReader, dynamic> GetReaderConverter(Type type)
+        {
+            DbDataReader a = null;
+            var b = a.GetColumnSchema();
+            return _sql.ReaderConverters.GetOrAdd(type, t =>
+            {
+                type.GetTypeInfo().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(i => i.CanWrite);
+                var r = Expression.Parameter(SqlTypeExtensions.DbDataReaderType, "r");
+                var cols = Expression.Variable(SqlTypeExtensions.DbColumnsType, "cols");
+                var colsAssign = Expression.Assign(cols, Expression.Call(r, "GetColumnSchema", new Type[0]));
+                
+                return Expression.Lambda<Func<DbDataReader, dynamic>>(null, r).Compile();
+            });
         }
 
         private Func<dynamic, List<SqlParameter>> GetParamConverter(Type type)
