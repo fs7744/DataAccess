@@ -6,7 +6,7 @@
   "dependencies": {
     "VIC.DataAccess": "1.0.0",
     "System.Data.SqlClient": "4.1.0",
-    "System.ComponentModel.TypeConverter": "4.1.0"
+    "Microsoft.CSharp": "4.0.1"
   },
   "frameworks": {
     "netstandard1.6": {

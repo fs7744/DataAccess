@@ -6,7 +6,7 @@ namespace VIC.DataAccess
     {
         public const string ParameterNamePrefix = "@";
 
-        public SqlDbType DbType { get; set; }
+        public DbType DbType { get; set; }
 
         public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 

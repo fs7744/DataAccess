@@ -69,7 +69,7 @@ namespace VIC.DataAccess.Sqlserver.Core
                     .ForEach(i =>
                     {
                         var sp = sps[i.ParameterName];
-                        i.SqlDbType = sp.DbType;
+                        i.DbType = sp.DbType;
                         i.Size = sp.Size;
                         i.IsNullable = sp.IsNullable;
                         i.Direction = sp.Direction;
@@ -95,8 +95,8 @@ namespace VIC.DataAccess.Sqlserver.Core
                          new Expression[6] {
                                  vAssign,
                                  Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Constant(DbParameter.ParameterNamePrefix + i.Name)),
-                                 Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(i.PropertyType.ToSqlDbType())),
-                                 Expression.Assign(Expression.Property(v, "SqlValue"),Expression.Property(p, i)),
+                                 Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(i.PropertyType.ToDbType())),
+                                 Expression.Assign(Expression.Property(v, "Value"),Expression.Property(p, i)),
                                  Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
                                  Expression.Call(vs,"Add",new Type[1] { SqlTypeExtensions.SqlParameterListType },v)
                      });

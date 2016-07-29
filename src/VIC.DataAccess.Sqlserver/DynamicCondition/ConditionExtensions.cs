@@ -6,6 +6,7 @@ namespace VIC.DataAccess
     {
         public static Condition Where(this IDataCommand command)
         {
+            return null;
         }
     }
 }
