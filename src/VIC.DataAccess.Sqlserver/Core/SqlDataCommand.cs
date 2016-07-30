@@ -4,25 +4,18 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstratiion;
 
-namespace VIC.DataAccess.Sqlserver.Core
+namespace VIC.DataAccess.Core
 {
     public class SqlDataCommand : IDataCommand
     {
-        private DbSql _sql;
+        private DbSql _Sql;
 
         public SqlDataCommand(DbSql sql)
         {
-            _sql = sql;
-        }
-
-        public void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
-        {
-            throw new NotImplementedException();
+            _Sql = sql;
         }
 
         public Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null)
@@ -32,52 +25,87 @@ namespace VIC.DataAccess.Sqlserver.Core
 
         public async Task<T> ExecuteEntityAsync<T>(dynamic paramter = null)
         {
-            DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter);
-            return await reader.NextResultAsync() ? GetReaderConverter(typeof(T))(reader) : default(T);
+            using (DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter))
+            {
+                return await reader.ReadAsync() ? _Sql.GetReaderConverter(typeof(T))(reader) : default(T);
+            }
         }
 
         public async Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null)
         {
-            var reader = await ExecuteDataReaderAsync(CommandBehavior.SingleResult, paramter);
-            var list = new List<T>();
-            var func = GetReaderConverter(typeof(T));
-            while (await reader.NextResultAsync())
+            using (DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.SingleResult, paramter))
             {
-                list.Add(func(reader));
+                var list = new List<T>();
+                var func = _Sql.GetReaderConverter(typeof(T));
+                while (await reader.ReadAsync())
+                {
+                    list.Add(func(reader));
+                }
+                return list;
             }
-            return list;
         }
 
-        public Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null)
+        public async Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null)
         {
-            throw new NotImplementedException();
+            DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.Default);
+            return new MultipleReader(reader, _Sql);
         }
 
-        public Task<T> ExecuteScalarAsync<T>(dynamic paramter = null)
+        public async Task<T> ExecuteScalarAsync<T>(dynamic paramter = null)
         {
-            throw new NotImplementedException();
+            using (DbDataReader reader = await ExecuteDataReaderAsync(CommandBehavior.SingleRow, paramter))
+            {
+                return await reader.ReadAsync() ? await _Sql.GetScalarConverter(typeof(T))(reader) : default(T);
+            }
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(dynamic parameter = null)
+        {
+            SqlCommand command = CreateCommand(parameter);
+            await command.Connection.OpenAsync();
+            return await command.ExecuteNonQueryAsync();
+        }
+
+        public async void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
+        {
+            var conn = new SqlConnection(_Sql.ConnectionString);
+            await conn.OpenAsync();
+            using(var sqlBulkCopy = new SqlBulkCopy(conn))
+            {
+                sqlBulkCopy.DestinationTableName = _Sql.Sql;
+                DbDataReader reader = ToDbDataReader(data);
+                
+                sqlBulkCopy.ColumnMappings.Add()
+                //var a = new BulkDataReader();
+                sqlBulkCopy.WriteToServerAsync(DbDataReader)
+            }
         }
 
         private async Task<DbDataReader> ExecuteDataReaderAsync(CommandBehavior behavior, dynamic parameter = null)
         {
-            var conn = new SqlConnection(_sql.ConnectionString);
+            var command = CreateCommand(parameter);
+            await command.Connection.OpenAsync();
+            return command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
+        }
+
+        private SqlCommand CreateCommand( dynamic parameter = null)
+        {
+            var conn = new SqlConnection(_Sql.ConnectionString);
             var command = conn.CreateCommand();
-            command.CommandText = _sql.Sql;
-            command.CommandType = _sql.Type;
+            command.CommandText = _Sql.Sql;
+            command.CommandType = _Sql.Type;
             if (parameter != null)
             {
-                List<SqlParameter> paramList = GetParamConverter(parameter.GetType())(parameter);
+                List<SqlParameter> paramList = _Sql.GetParamConverter(parameter.GetType())(parameter);
                 SetSpecialParameters(paramList);
                 command.Parameters.AddRange(paramList.ToArray());
             }
-
-            await conn.OpenAsync();
-            return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
+            return command;
         }
 
         private void SetSpecialParameters(List<SqlParameter> paramList)
         {
-            var sps = _sql.SpecialParameters;
+            var sps = _Sql.SpecialParameters;
             if (sps != null && sps.Count > 0)
             {
                 paramList.Where(i => sps.ContainsKey(i.ParameterName)).ToList()
@@ -90,55 +118,6 @@ namespace VIC.DataAccess.Sqlserver.Core
                         i.Direction = sp.Direction;
                     });
             }
-        }
-
-        private Func<DbDataReader, dynamic> GetReaderConverter(Type type)
-        {
-            DbDataReader a = null;
-            var b = a.GetColumnSchema().GetEnumerator();
-            return _sql.ReaderConverters.GetOrAdd(type, t =>
-            {
-                type.GetTypeInfo().GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(i => i.CanWrite)
-                .Select(i=> Expression.SwitchCase(Expression.Constant(i.Name.GetHashCode()),
-                    Expression.Assign(;
-                Expression.Switch()
-                var r = Expression.Parameter(SqlTypeExtensions.DbDataReaderType, "r");
-                var cols = Expression.Variable(SqlTypeExtensions.DbColumnsType, "cols");
-                var colsAssign = Expression.Assign(cols, Expression.Call(r, "GetColumnSchema", new Type[0]));
-
-                return Expression.Lambda<Func<DbDataReader, dynamic>>(null, r).Compile();
-            });
-        }
-
-        private Func<dynamic, List<SqlParameter>> GetParamConverter(Type type)
-        {
-            return _sql.ParamConverters.GetOrAdd(type, (Type t) =>
-            {
-                var p = Expression.Parameter(t, "p");
-                var vs = Expression.Variable(SqlTypeExtensions.SqlParameterListType, "vs");
-                var vsAssign = Expression.Assign(vs, Expression.New(SqlTypeExtensions.SqlParameterListType));
-                var v = Expression.Variable(SqlTypeExtensions.SqlParameterType, "v");
-                var vAssign = Expression.Assign(v, Expression.New(SqlTypeExtensions.SqlParameterType));
-                var ps = t.GetTypeInfo()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(i => i.CanRead)
-                .Select(i =>
-                {
-                    return Expression.Block(new ParameterExpression[1] { v },
-                         new Expression[6] {
-                                 vAssign,
-                                 Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Constant(DbParameter.ParameterNamePrefix + i.Name)),
-                                 Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(i.PropertyType.ToDbType())),
-                                 Expression.Assign(Expression.Property(v, "Value"),Expression.Property(p, i)),
-                                 Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
-                                 Expression.Call(vs,"Add",new Type[1] { SqlTypeExtensions.SqlParameterListType },v)
-                     });
-                }).ToList<Expression>();
-                ps.Insert(0, vsAssign);
-                ps.Add(vs);
-                return Expression.Lambda<Func<dynamic, List<SqlParameter>>>(Expression.Block(new ParameterExpression[1] { vs }, ps), p).Compile();
-            });
         }
     }
 }

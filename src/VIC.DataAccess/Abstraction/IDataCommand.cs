@@ -16,6 +16,8 @@ namespace VIC.DataAccess.Abstratiion
 
         Task<IMultipleReader> ExecuteMultipleAsync(dynamic parameter = null);
 
+        Task<int> ExecuteNonQueryAsync(dynamic parameter = null);
+
         void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new();
     }
 }

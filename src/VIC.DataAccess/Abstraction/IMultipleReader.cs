@@ -1,16 +1,14 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 
 namespace VIC.DataAccess.Abstratiion
 {
     public interface IMultipleReader
     {
-        List<T> ExecuteEntityList<T>();
+        Task<List<T>> ExecuteEntityListAsync<T>();
 
-        T ExecuteEntity<T>();
+        Task<T> ExecuteEntityAsync<T>();
 
-        T ExecuteScalar<T>();
-
-        IDataReader ExecuteDataReader();
+        Task<T> ExecuteScalarAsync<T>();
     }
 }
