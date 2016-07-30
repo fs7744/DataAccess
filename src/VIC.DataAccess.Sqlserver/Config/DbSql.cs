@@ -73,6 +73,7 @@ namespace VIC.DataAccess
             return Expression.Lambda<Action<dynamic, int, int, DbDataReader>>(
                 Expression.Block(Expression.Switch(name, switchCases)), v, name, index, r).Compile();
         }
+
         internal Func<dynamic, List<SqlParameter>> GetParamConverter(Type type)
         {
             return ParamConverters.GetOrAdd(type, (Type t) =>

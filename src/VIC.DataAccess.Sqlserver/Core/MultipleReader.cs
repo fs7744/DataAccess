@@ -6,7 +6,7 @@ using VIC.DataAccess.Abstratiion;
 
 namespace VIC.DataAccess.Core
 {
-    public class MultipleReader : IMultipleReader,IDisposable
+    public class MultipleReader : IMultipleReader, IDisposable
     {
         private DbSql _Sql;
         private DbDataReader _Reader;
@@ -61,7 +61,8 @@ namespace VIC.DataAccess.Core
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; 
+
+        private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -82,7 +83,7 @@ namespace VIC.DataAccess.Core
         {
             Dispose(true);
         }
-        #endregion
 
+        #endregion IDisposable Support
     }
 }

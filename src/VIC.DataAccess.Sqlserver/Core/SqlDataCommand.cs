@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -17,6 +16,8 @@ namespace VIC.DataAccess.Core
         {
             _Sql = sql;
         }
+
+        #region IDataCommand
 
         public Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null)
         {
@@ -70,16 +71,18 @@ namespace VIC.DataAccess.Core
         {
             var conn = new SqlConnection(_Sql.ConnectionString);
             await conn.OpenAsync();
-            using(var sqlBulkCopy = new SqlBulkCopy(conn))
+            using (var sqlBulkCopy = new SqlBulkCopy(conn))
             {
                 sqlBulkCopy.DestinationTableName = _Sql.Sql;
-                DbDataReader reader = ToDbDataReader(data);
-                
-                sqlBulkCopy.ColumnMappings.Add()
-                //var a = new BulkDataReader();
-                sqlBulkCopy.WriteToServerAsync(DbDataReader)
+                var reader = new BulkCopyDataReader<T>(data);
+                reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
+                await sqlBulkCopy.WriteToServerAsync(reader);
             }
         }
+
+        #endregion IDataCommand
+
+        #region private
 
         private async Task<DbDataReader> ExecuteDataReaderAsync(CommandBehavior behavior, dynamic parameter = null)
         {
@@ -88,7 +91,7 @@ namespace VIC.DataAccess.Core
             return command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
         }
 
-        private SqlCommand CreateCommand( dynamic parameter = null)
+        private SqlCommand CreateCommand(dynamic parameter = null)
         {
             var conn = new SqlConnection(_Sql.ConnectionString);
             var command = conn.CreateCommand();
@@ -119,5 +122,7 @@ namespace VIC.DataAccess.Core
                     });
             }
         }
+
+        #endregion private
     }
 }
