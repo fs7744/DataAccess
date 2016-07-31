@@ -11,10 +11,16 @@ namespace VIC.DataAccess.Core
     public class SqlDataCommand : IDataCommand
     {
         private DbSql _Sql;
+        private SqlConnection _Conn;
+        private SqlTransaction _Tran;
+
+        public string CommandText { get; set; }
 
         public SqlDataCommand(DbSql sql)
         {
             _Sql = sql;
+            _Conn = new SqlConnection(_Sql.ConnectionString);
+            CommandText = _Sql.Sql;
         }
 
         #region IDataCommand
@@ -69,11 +75,10 @@ namespace VIC.DataAccess.Core
 
         public async void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
         {
-            var conn = new SqlConnection(_Sql.ConnectionString);
-            await conn.OpenAsync();
-            using (var sqlBulkCopy = new SqlBulkCopy(conn))
+            await _Conn.OpenAsync();
+            using (var sqlBulkCopy = new SqlBulkCopy(_Conn))
             {
-                sqlBulkCopy.DestinationTableName = _Sql.Sql;
+                sqlBulkCopy.DestinationTableName = CommandText;
                 var reader = new BulkCopyDataReader<T>(data);
                 reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
                 await sqlBulkCopy.WriteToServerAsync(reader);
@@ -93,10 +98,13 @@ namespace VIC.DataAccess.Core
 
         private SqlCommand CreateCommand(dynamic parameter = null)
         {
-            var conn = new SqlConnection(_Sql.ConnectionString);
-            var command = conn.CreateCommand();
-            command.CommandText = _Sql.Sql;
+            var command = _Conn.CreateCommand();
+            command.CommandText = CommandText;
             command.CommandType = _Sql.Type;
+            if (_Tran != null)
+            {
+                command.Transaction = _Tran;
+            }
             if (parameter != null)
             {
                 List<SqlParameter> paramList = _Sql.GetParamConverter(parameter.GetType())(parameter);
@@ -121,6 +129,15 @@ namespace VIC.DataAccess.Core
                         i.Direction = sp.Direction;
                     });
             }
+        }
+
+        public IDbTransaction BeginTransaction(IsolationLevel level)
+        {
+            if (_Tran == null)
+            {
+                _Tran = _Conn.BeginTransaction(level);
+            }
+            return _Tran;
         }
 
         #endregion private
