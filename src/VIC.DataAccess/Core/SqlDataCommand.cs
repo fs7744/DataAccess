@@ -1,25 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstratiion;
 
 namespace VIC.DataAccess.Core
 {
-    public class SqlDataCommand : IDataCommand
+    public abstract class SqlDataCommand : IDataCommand, IDisposable
     {
-        private DbSql _Sql;
-        private SqlConnection _Conn;
-        private SqlTransaction _Tran;
+        protected DbSql _Sql;
+        protected DbConnection _Conn;
+        protected DbTransaction _Tran;
 
         public string CommandText { get; set; }
 
         public SqlDataCommand(DbSql sql)
         {
             _Sql = sql;
-            _Conn = new SqlConnection(_Sql.ConnectionString);
+            _Conn = CreateConnection(_Sql.ConnectionString);
             CommandText = _Sql.Sql;
         }
 
@@ -48,6 +48,7 @@ namespace VIC.DataAccess.Core
                 {
                     list.Add(func(reader));
                 }
+
                 return list;
             }
         }
@@ -68,24 +69,23 @@ namespace VIC.DataAccess.Core
 
         public async Task<int> ExecuteNonQueryAsync(dynamic parameter = null)
         {
-            SqlCommand command = CreateCommand(parameter);
+            DbCommand command = CreateCommand(parameter);
             await command.Connection.OpenAsync();
             return await command.ExecuteNonQueryAsync();
         }
 
-        public async void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
+        public IDbTransaction BeginTransaction(IsolationLevel level)
         {
-            await _Conn.OpenAsync();
-            using (var sqlBulkCopy = new SqlBulkCopy(_Conn))
+            if (_Tran == null)
             {
-                sqlBulkCopy.DestinationTableName = CommandText;
-                var reader = new BulkCopyDataReader<T>(data);
-                reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
-                await sqlBulkCopy.WriteToServerAsync(reader);
+                _Tran = _Conn.BeginTransaction(level);
             }
+            return _Tran;
         }
 
         #endregion IDataCommand
+
+        protected abstract DbConnection CreateConnection(string connectionString);
 
         #region private
 
@@ -96,7 +96,7 @@ namespace VIC.DataAccess.Core
             return command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior);
         }
 
-        private SqlCommand CreateCommand(dynamic parameter = null)
+        private DbCommand CreateCommand(dynamic parameter = null)
         {
             var command = _Conn.CreateCommand();
             command.CommandText = CommandText;
@@ -107,14 +107,14 @@ namespace VIC.DataAccess.Core
             }
             if (parameter != null)
             {
-                List<SqlParameter> paramList = _Sql.GetParamConverter(parameter.GetType())(parameter);
+                List<DbParameter> paramList = _Sql.GetParamConverter(parameter.GetType())(parameter);
                 SetSpecialParameters(paramList);
                 command.Parameters.AddRange(paramList.ToArray());
             }
             return command;
         }
 
-        private void SetSpecialParameters(List<SqlParameter> paramList)
+        private void SetSpecialParameters(List<DbParameter> paramList)
         {
             var sps = _Sql.SpecialParameters;
             if (sps != null && sps.Count > 0)
@@ -131,15 +131,34 @@ namespace VIC.DataAccess.Core
             }
         }
 
-        public IDbTransaction BeginTransaction(IsolationLevel level)
+        #endregion private
+
+        #region IDisposable Support
+
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
         {
-            if (_Tran == null)
+            if (!disposedValue)
             {
-                _Tran = _Conn.BeginTransaction(level);
+                if (disposing)
+                {
+                    _Tran.Dispose();
+                    _Conn.Dispose();
+                }
+
+                _Tran = null;
+                _Conn = null;
+                _Sql = null;
+                disposedValue = true;
             }
-            return _Tran;
         }
 
-        #endregion private
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion IDisposable Support
     }
 }

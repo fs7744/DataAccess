@@ -2,7 +2,7 @@ using System.Data;
 
 namespace VIC.DataAccess
 {
-    public class DbParameter
+    public class DataParameter
     {
         public const string ParameterNamePrefix = "@";
 

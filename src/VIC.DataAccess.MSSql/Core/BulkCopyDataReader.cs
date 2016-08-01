@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -18,11 +19,10 @@ namespace VIC.DataAccess.Core
         {
             _Data = data.GetEnumerator();
             var type = typeof(T);
-            var properties = type.GetTypeInfo().GetProperties(
-                    BindingFlags.GetProperty |
+            var properties = TypeExtensions.GetProperties(type,
                     BindingFlags.Instance |
                     BindingFlags.Public |
-                    BindingFlags.DeclaredOnly);
+                    BindingFlags.DeclaredOnly).Where(i => i.CanRead);
             var index = 0;
             foreach (var property in properties)
             {

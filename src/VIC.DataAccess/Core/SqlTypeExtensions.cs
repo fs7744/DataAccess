@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Reflection;
 
 namespace VIC.DataAccess.Core
 {
     public static class SqlTypeExtensions
     {
-        public static readonly Type SqlParameterType = typeof(SqlParameter);
-        public static readonly Type SqlParameterListType = typeof(List<SqlParameter>);
+        public static readonly Type SqlParameterType = typeof(DbParameter);
+        public static readonly Type SqlParameterListType = typeof(List<DbParameter>);
         public static readonly Type NullableType = typeof(Nullable<>);
 
         public static readonly Type DbDataReaderType = typeof(DbDataReader);

@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "1.0.0-*",
 
   "packOptions": {
@@ -15,12 +15,10 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "System.Data.Common": "4.1.0",
-    "Microsoft.Extensions.DependencyInjection": "1.0.0",
-    "System.Dynamic.Runtime": "4.0.11",
-    "Microsoft.CSharp": "4.0.1",
-    "System.Reflection.TypeExtensions": "4.1.0"
+    "VIC.DataAccess": "1.0.0",
+    "Pomelo.Data.MySql": "1.0.0-prerelease-20160730"
   },
+
   "frameworks": {
     "netstandard1.3": {}
   }

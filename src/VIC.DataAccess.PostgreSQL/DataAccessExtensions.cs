@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using VIC.DataAccess.Abstratiion;
-using VIC.DataAccess.Core;
+using VIC.DataAccess.PostgreSQL.Core;
 
 namespace VIC.DataAccess
 {
@@ -8,8 +8,7 @@ namespace VIC.DataAccess
     {
         public static IServiceCollection UseDataAccess(this IServiceCollection service, DbConfig config)
         {
-            service.AddSingleton<IDbManager>(new SqlDbManager(config));
-            return service;
+            return service.AddSingleton<IDbManager>(new PostgreSQLDbManager(config));
         }
     }
 }

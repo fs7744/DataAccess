@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -24,9 +23,9 @@ namespace VIC.DataAccess
 
         public CommandType Type { get; set; }
 
-        public Dictionary<string, DbParameter> SpecialParameters { get; set; }
+        public Dictionary<string, DataParameter> SpecialParameters { get; set; }
 
-        internal ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>> ParamConverters { get; set; }
+        internal ConcurrentDictionary<Type, Func<dynamic, List<DbParameter>>> ParamConverters { get; set; }
 
         internal ConcurrentDictionary<Type, Func<DbDataReader, dynamic>> ReaderConverters { get; set; }
 
@@ -64,7 +63,7 @@ namespace VIC.DataAccess
             var name = Expression.Parameter(SqlTypeExtensions.IntType, "name");
             var index = Expression.Parameter(SqlTypeExtensions.IntType, "i");
             var r = Expression.Parameter(SqlTypeExtensions.DbDataReaderType, "r");
-            var switchCases = type.GetTypeInfo().GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            var switchCases = TypeExtensions.GetProperties(type, BindingFlags.Instance | BindingFlags.Public)
             .Where(i => i.CanWrite)
             .Select(i => Expression.SwitchCase(Expression.Constant(i.Name.GetHashCode()),
                 Expression.Assign(Expression.Property(v, i),
@@ -74,7 +73,7 @@ namespace VIC.DataAccess
                 Expression.Block(Expression.Switch(name, switchCases)), v, name, index, r).Compile();
         }
 
-        internal Func<dynamic, List<SqlParameter>> GetParamConverter(Type type)
+        internal Func<dynamic, List<DbParameter>> GetParamConverter(Type type)
         {
             return ParamConverters.GetOrAdd(type, (Type t) =>
             {
@@ -83,15 +82,14 @@ namespace VIC.DataAccess
                 var vsAssign = Expression.Assign(vs, Expression.New(SqlTypeExtensions.SqlParameterListType));
                 var v = Expression.Variable(SqlTypeExtensions.SqlParameterType, "v");
                 var vAssign = Expression.Assign(v, Expression.New(SqlTypeExtensions.SqlParameterType));
-                var ps = t.GetTypeInfo()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                var ps = TypeExtensions.GetProperties(t, BindingFlags.Instance | BindingFlags.Public)
                 .Where(i => i.CanRead)
                 .Select(i =>
                 {
                     return Expression.Block(new ParameterExpression[1] { v },
                          new Expression[6] {
                                  vAssign,
-                                 Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Constant(DbParameter.ParameterNamePrefix + i.Name)),
+                                 Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Constant(DataParameter.ParameterNamePrefix + i.Name)),
                                  Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(i.PropertyType.ToDbType())),
                                  Expression.Assign(Expression.Property(v, "Value"),Expression.Property(p, i)),
                                  Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
@@ -100,7 +98,7 @@ namespace VIC.DataAccess
                 }).ToList<Expression>();
                 ps.Insert(0, vsAssign);
                 ps.Add(vs);
-                return Expression.Lambda<Func<dynamic, List<SqlParameter>>>(Expression.Block(new ParameterExpression[1] { vs }, ps), p).Compile();
+                return Expression.Lambda<Func<dynamic, List<DbParameter>>>(Expression.Block(new ParameterExpression[1] { vs }, ps), p).Compile();
             });
         }
 

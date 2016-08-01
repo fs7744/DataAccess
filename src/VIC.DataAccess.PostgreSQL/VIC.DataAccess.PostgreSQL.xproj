@@ -6,11 +6,12 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>c28fb4e8-f879-43b6-99b1-5c39499c1746</ProjectGuid>
-    <RootNamespace>VIC.DataAccess</RootNamespace>
+    <ProjectGuid>3abe5689-dee0-460f-8c63-f9b4e3597cef</ProjectGuid>
+    <RootNamespace>VIC.DataAccess.PostgreSQL</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>
+
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>

@@ -2,19 +2,18 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstratiion;
 
 namespace VIC.DataAccess.Core
 {
-    public class SqlDbManager : IDbManager
+    public abstract class SqlDbManager : IDbManager
     {
         public Dictionary<string, DbSql> SqlConfigs { get; private set; }
 
         public SqlDbManager(DbConfig config)
         {
-            var paramConverters = new ConcurrentDictionary<Type, Func<dynamic, List<SqlParameter>>>();
+            var paramConverters = new ConcurrentDictionary<Type, Func<dynamic, List<DbParameter>>>();
             var readerConverters = new ConcurrentDictionary<Type, Func<DbDataReader, dynamic>>();
             var scalarConverters = new Dictionary<Type, Func<DbDataReader, Task<dynamic>>>();
             scalarConverters.Add(typeof(long), async i => await i.ReadAsync() ? i.GetInt64(0) : default(long));
@@ -44,7 +43,9 @@ namespace VIC.DataAccess.Core
         public IDataCommand GetCommand(string commandName)
         {
             DbSql sql = null;
-            return SqlConfigs.TryGetValue(commandName, out sql) ? new SqlDataCommand(sql) : null;
+            return SqlConfigs.TryGetValue(commandName, out sql) ? CreateCommand(sql) : null;
         }
+
+        protected abstract IDataCommand CreateCommand(DbSql sql);
     }
 }

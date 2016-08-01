@@ -21,8 +21,6 @@ namespace VIC.DataAccess.Abstratiion
 
         Task<int> ExecuteNonQueryAsync(dynamic parameter = null);
 
-        void ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new();
-
         IDbTransaction BeginTransaction(IsolationLevel level);
     }
 }
