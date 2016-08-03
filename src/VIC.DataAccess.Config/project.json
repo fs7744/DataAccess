@@ -15,6 +15,7 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
+    "VIC.ObjectConfig": "1.0.0",
     "VIC.DataAccess": "1.0.0"
   },
 

@@ -1,7 +1,9 @@
-﻿namespace VIC.ObjectConfig.Abstraction
+﻿using System.Collections.Generic;
+
+namespace VIC.ObjectConfig.Abstraction
 {
     public interface IConfigProvider
     {
-        IConfigResolver GetResolver();
+        IEnumerable<IConfigSource> GetSources();
     }
 }
