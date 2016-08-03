@@ -1,4 +1,4 @@
-using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.Abstraction;
 
 namespace VIC.DataAccess.DynamicCondition
 {

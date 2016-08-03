@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
-using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.Abstraction;
 
 namespace VIC.DataAccess.Core
 {
     public class MultipleReader : IMultipleReader, IDisposable
     {
-        private DbSql _Sql;
-        private DbDataReader _Reader;
+        protected DbDataReader _Reader;
+        protected IScalarConverter _SC;
+        protected IEntityConverter _EC;
 
-        public MultipleReader(DbDataReader reader, DbSql sql)
+        public MultipleReader(DbDataReader reader, IScalarConverter sc, IEntityConverter ec)
         {
-            _Sql = sql;
+            _SC = sc;
+            _EC = ec;
             _Reader = reader;
         }
 
@@ -24,7 +26,7 @@ namespace VIC.DataAccess.Core
             {
                 if (await _Reader.ReadAsync())
                 {
-                    result = await _Sql.GetReaderConverter(typeof(T))(_Reader);
+                    result = await _EC.Convert<T>(_Reader);
                 }
                 await _Reader.NextResultAsync();
             }
@@ -36,10 +38,9 @@ namespace VIC.DataAccess.Core
             var list = new List<T>();
             if (_Reader.HasRows)
             {
-                var func = _Sql.GetReaderConverter(typeof(T));
                 while (await _Reader.ReadAsync())
                 {
-                    list.Add(func(_Reader));
+                    list.Add(_EC.Convert<T>(_Reader));
                 }
                 await _Reader.NextResultAsync();
             }
@@ -53,7 +54,7 @@ namespace VIC.DataAccess.Core
             {
                 if (await _Reader.ReadAsync())
                 {
-                    result = await _Sql.GetScalarConverter(typeof(T))(_Reader);
+                    result = _SC.Convert<T>(_Reader);
                 }
                 await _Reader.NextResultAsync();
             }
@@ -74,7 +75,6 @@ namespace VIC.DataAccess.Core
                 }
 
                 _Reader = null;
-                _Sql = null;
                 disposedValue = true;
             }
         }

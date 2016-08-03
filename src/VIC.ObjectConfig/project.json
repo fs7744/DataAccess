@@ -1,0 +1,24 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "packOptions": {
+    "authors": [ "Victor.X.Qu" ],
+    "description": "Config To Object Mapping",
+    "projectUrl": "https://github.com/fs7744/DataAccess",
+    "iconUrl": "https://github.com/fs7744/DataAccess/blob/master/aataaccess.png?raw=true",
+    "licenseUrl": "https://github.com/fs7744/DataAccess/blob/master/LICENSE?raw=true",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/fs7744/DataAccess.git"
+    }
+  },
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "Microsoft.Extensions.Configuration.FileExtensions":"1.0.0"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {}
+  }
+}

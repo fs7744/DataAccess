@@ -1,4 +1,4 @@
-namespace VIC.DataAccess.Abstratiion
+namespace VIC.DataAccess.Abstraction
 {
     public interface IDbManager
     {

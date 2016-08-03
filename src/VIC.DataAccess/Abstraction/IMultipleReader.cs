@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace VIC.DataAccess.Abstratiion
+namespace VIC.DataAccess.Abstraction
 {
     public interface IMultipleReader
     {

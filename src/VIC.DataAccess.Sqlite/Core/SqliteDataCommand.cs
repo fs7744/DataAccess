@@ -1,12 +1,13 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Data.Common;
+using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Core;
 
-namespace VIC.DataAccess.Sqlite.Core
+namespace VIC.DataAccess.SQLite.Core
 {
-    public class SqliteDataCommand : SqlDataCommand
+    public class SQLiteDataCommand : DataCommand
     {
-        public SqliteDataCommand(DbSql sql) : base(sql)
+        public SQLiteDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
         {
         }
 

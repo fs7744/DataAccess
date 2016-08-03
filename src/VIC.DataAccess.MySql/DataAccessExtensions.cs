@@ -1,14 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using VIC.DataAccess.Abstratiion;
+using Pomelo.Data.MySql;
+using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Core;
 using VIC.DataAccess.MySql.Core;
 
 namespace VIC.DataAccess
 {
     public static class DataAccessExtensions
     {
-        public static IServiceCollection UseDataAccess(this IServiceCollection service, DbConfig config)
+        public static IServiceCollection UseDataAccess(this IServiceCollection service)
         {
-            return service.AddSingleton<IDbManager>(new MySqlDbManager(config));
+            TypeHelper.SqlParameterType = typeof(MySqlParameter);
+            return service.AddTransient<IDataCommand, MySqlDataCommand>();
         }
     }
 }

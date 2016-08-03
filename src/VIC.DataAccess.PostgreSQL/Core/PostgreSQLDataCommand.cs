@@ -1,12 +1,13 @@
 ﻿using Npgsql;
 using System.Data.Common;
+using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Core;
 
 namespace VIC.DataAccess.PostgreSQL.Core
 {
-    public class PostgreSQLDataCommand : SqlDataCommand
+    public class PostgreSQLDataCommand : DataCommand
     {
-        public PostgreSQLDataCommand(DbSql sql) : base(sql)
+        public PostgreSQLDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
         {
         }
 

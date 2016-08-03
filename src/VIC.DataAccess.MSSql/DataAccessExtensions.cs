@@ -1,17 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
-using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Core;
 using VIC.DataAccess.MSSql.Core;
 
 namespace VIC.DataAccess
 {
-    public static class DataAccessExtensions
+    public static partial class DataAccessExtensions
     {
-        public static IServiceCollection UseDataAccess(this IServiceCollection service, DbConfig config)
+        public static IServiceCollection UseDataAccess(this IServiceCollection service)
         {
-            service.AddSingleton<IDbManager>(new MSSqlDbManager(config));
+            TypeHelper.SqlParameterType = typeof(SqlParameter);
+            service.AddTransient<IDataCommand, MSSqlDataCommand>();
             return service;
         }
 

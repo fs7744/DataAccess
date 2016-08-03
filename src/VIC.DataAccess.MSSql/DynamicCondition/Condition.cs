@@ -1,5 +1,5 @@
 using System.Text;
-using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.Abstraction;
 
 namespace VIC.DataAccess.DynamicCondition
 {
@@ -29,8 +29,8 @@ namespace VIC.DataAccess.DynamicCondition
 
         public void Apply()
         {
-            if (string.IsNullOrEmpty(_Command.CommandText)) return;
-            _Command.CommandText = _Command.CommandText.Replace(_Placeholder, _SB.ToString());
+            if (string.IsNullOrEmpty(_Command.Text)) return;
+            _Command.Text = _Command.Text.Replace(_Placeholder, _SB.ToString());
         }
     }
 }
