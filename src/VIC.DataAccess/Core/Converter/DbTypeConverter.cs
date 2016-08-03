@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 
-namespace VIC.DataAccess.Core
+namespace VIC.DataAccess.Core.Converter
 {
     public class DbTypeConverter : IDbTypeConverter
     {

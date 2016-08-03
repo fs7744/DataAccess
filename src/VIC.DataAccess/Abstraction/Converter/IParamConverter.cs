@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace VIC.DataAccess.Abstraction
+namespace VIC.DataAccess.Abstraction.Converter
 {
     public interface IParamConverter
     {

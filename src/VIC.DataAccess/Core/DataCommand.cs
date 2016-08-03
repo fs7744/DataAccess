@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 
 namespace VIC.DataAccess.Core
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VIC.DataAccess.Abstraction
+namespace VIC.DataAccess.Abstraction.Converter
 {
     public interface IDbFuncNameConverter
     {

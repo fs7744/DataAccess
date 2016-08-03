@@ -1,8 +1,8 @@
 ﻿using System.Data.Common;
 
-namespace VIC.DataAccess.Abstraction
+namespace VIC.DataAccess.Abstraction.Converter
 {
-    public interface IScalarConverter
+    public interface IEntityConverter
     {
         dynamic Convert<T>(DbDataReader reader);
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 
 namespace VIC.DataAccess.Core
 {

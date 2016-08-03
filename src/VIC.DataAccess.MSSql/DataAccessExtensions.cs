@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core;
+using VIC.DataAccess.Core.Converter;
 using VIC.DataAccess.MSSql.Core;
 
 namespace VIC.DataAccess
@@ -14,8 +16,12 @@ namespace VIC.DataAccess
         public static IServiceCollection UseDataAccess(this IServiceCollection service)
         {
             TypeHelper.SqlParameterType = typeof(SqlParameter);
-            service.AddTransient<IDataCommand, MSSqlDataCommand>();
-            return service;
+            return service.AddSingleton<IDbFuncNameConverter, DbFuncNameConverter>()
+                .AddSingleton<IDbTypeConverter, DbTypeConverter>()
+                .AddSingleton<IScalarConverter, ScalarConverter>()
+                .AddSingleton<IEntityConverter, EntityConverter>()
+                .AddSingleton<IParamConverter, ParamConverter>()
+                .AddTransient<IDataCommand, MSSqlDataCommand>();
         }
 
         public static Task ExecuteBulkCopyAsync<T>(this IDataCommand command, List<T> data) where T : class, new()

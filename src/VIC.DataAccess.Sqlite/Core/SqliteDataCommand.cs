@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Data.Common;
-using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core;
 
 namespace VIC.DataAccess.SQLite.Core

@@ -5,9 +5,9 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 
-namespace VIC.DataAccess.Core
+namespace VIC.DataAccess.Core.Converter
 {
     public class ParamConverter : IParamConverter
     {

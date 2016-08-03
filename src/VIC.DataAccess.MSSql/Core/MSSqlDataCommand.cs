@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core;
 
 namespace VIC.DataAccess.MSSql.Core

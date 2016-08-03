@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace VIC.DataAccess.Abstraction
+namespace VIC.DataAccess.Abstraction.Converter
 {
     public interface IDbTypeConverter
     {
