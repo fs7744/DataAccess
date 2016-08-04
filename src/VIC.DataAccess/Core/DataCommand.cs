@@ -165,6 +165,7 @@ namespace VIC.DataAccess.Core
             var command = _Conn.CreateCommand();
             command.CommandText = Text;
             command.CommandType = Type;
+            command.CommandTimeout = Timeout;
             if (_Tran != null)
             {
                 command.Transaction = _Tran;
