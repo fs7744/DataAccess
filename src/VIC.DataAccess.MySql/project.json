@@ -16,7 +16,7 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "VIC.DataAccess": "1.0.0",
-    "Pomelo.Data.MySql": "1.0.0-prerelease-20160730"
+    "Pomelo.Data.MySql": "1.0.0-prerelease-20160803"
   },
 
   "frameworks": {

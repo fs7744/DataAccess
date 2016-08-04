@@ -2,6 +2,6 @@
 {
     public interface IConfig
     {
-        IConfigSource GetConfigSource(string Key);
+        IConfigSource GetConfigSource(string key);
     }
 }
