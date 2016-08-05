@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VIC.DataAccess
+namespace VIC.DataAccess.Config
 {
     public class DbConfig
     {

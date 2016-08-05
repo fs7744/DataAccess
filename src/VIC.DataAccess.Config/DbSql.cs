@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 
-namespace VIC.DataAccess
+namespace VIC.DataAccess.Config
 {
     public class DbSql
     {

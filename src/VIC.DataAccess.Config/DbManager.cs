@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using VIC.DataAccess.Abstraction;
 
-namespace VIC.DataAccess.Core
+namespace VIC.DataAccess.Config
 {
-    public abstract class SqlDbManager : IDbManager
+    public abstract class DbManager : IDbManager
     {
         public Dictionary<string, DbSql> SqlConfigs { get; private set; }
 
-        public SqlDbManager(DbConfig config)
+        public DbManager(DbConfig config)
         {
             foreach (var item in config.SqlConfigs.Values)
             {
