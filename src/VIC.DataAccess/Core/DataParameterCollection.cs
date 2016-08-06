@@ -2,11 +2,11 @@
 
 namespace VIC.DataAccess.Core
 {
-    public class DbParameterCollection
+    public class DataParameterCollection
     {
         private Dictionary<string, DataParameter> _Params = new Dictionary<string, DataParameter>();
 
-        public DbParameterCollection()
+        public DataParameterCollection()
         {
         }
 

@@ -41,7 +41,7 @@ namespace VIC.DataAccess.Core
 
         public CommandType Type { get; set; }
 
-        public DbParameterCollection PreParameters { get; } = new DbParameterCollection();
+        public DataParameterCollection PreParameters { get; } = new DataParameterCollection();
 
         public DataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec)
         {
