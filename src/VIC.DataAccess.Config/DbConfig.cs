@@ -8,6 +8,6 @@ namespace VIC.DataAccess.Config
 
         public List<DbSql> SqlConfigs { get; set; }
 
-        internal new Dictionary<string, DbSql> Sqls { get; set; }
+        internal Dictionary<string, DbSql> Sqls { get; set; }
     }
 }
