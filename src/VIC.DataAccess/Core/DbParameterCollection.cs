@@ -55,5 +55,10 @@ namespace VIC.DataAccess.Core
         {
             return _Params.Remove(parameterName);
         }
+
+        public IEnumerable<DataParameter> GetParams()
+        {
+            return _Params.Values;
+        }
     }
 }

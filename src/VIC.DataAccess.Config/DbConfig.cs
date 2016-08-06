@@ -4,8 +4,10 @@ namespace VIC.DataAccess.Config
 {
     public class DbConfig
     {
-        public Dictionary<string, string> ConnectionStrings { get; set; }
+        public List<DbConnection> ConnectionStrings { get; set; }
 
-        public Dictionary<string, DbSql> SqlConfigs { get; set; }
+        public List<DbSql> SqlConfigs { get; set; }
+
+        internal new Dictionary<string, DbSql> Sqls { get; set; }
     }
 }

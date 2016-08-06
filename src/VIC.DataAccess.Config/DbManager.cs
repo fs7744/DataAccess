@@ -1,21 +1,30 @@
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using VIC.DataAccess.Abstraction;
+using VIC.ObjectConfig;
+using VIC.ObjectConfig.Abstraction;
 
 namespace VIC.DataAccess.Config
 {
-    public abstract class DbManager : IDbManager
+    public class DbManager : IDbManager
     {
-        public Dictionary<string, DbSql> SqlConfigs { get; private set; }
+        public const string DbConfigKey = "DB";
+        private IConfig _Config;
+        private IServiceProvider _ServiceProvider;
 
-        public DbManager(DbConfig config)
+        public Dictionary<string, DbSql> SqlConfigs
         {
-            foreach (var item in config.SqlConfigs.Values)
+            get
             {
-                var connectionString = string.Empty;
-                config.ConnectionStrings.TryGetValue(item.ConnectionName, out connectionString);
-                item.ConnectionString = connectionString;
+                return _Config.Get<DbConfig>(DbConfigKey)?.Sqls;
             }
-            SqlConfigs = config.SqlConfigs;
+        }
+
+        public DbManager(IConfig config, IServiceProvider serviceProvider)
+        {
+            _Config = config;
+            _ServiceProvider = serviceProvider;
         }
 
         public IDataCommand GetCommand(string commandName)
@@ -24,6 +33,15 @@ namespace VIC.DataAccess.Config
             return SqlConfigs.TryGetValue(commandName, out sql) ? CreateCommand(sql) : null;
         }
 
-        protected abstract IDataCommand CreateCommand(DbSql sql);
+        protected IDataCommand CreateCommand(DbSql sql)
+        {
+            var command = _ServiceProvider.GetService<IDataCommand>();
+            command.ConnectionString = sql.ConnectionString;
+            command.Text = sql.Text;
+            command.Type = sql.Type;
+            command.Timeout = sql.Timeout;
+            sql.PreParameters?.ForEach(i => command.AddPreParam(i));
+            return command;
+        }
     }
 }

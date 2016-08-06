@@ -17,6 +17,8 @@ namespace VIC.DataAccess.Abstraction
 
         CommandType Type { get; set; }
 
+        void AddPreParam(DataParameter parameter);
+
         Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null);
 
         Task<List<T>> ExecuteEntityListAsync<T>(CancellationToken cancellationToken, dynamic paramter = null);

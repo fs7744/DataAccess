@@ -139,6 +139,11 @@ namespace VIC.DataAccess.Core
             return _Tran;
         }
 
+        public void AddPreParam(DataParameter parameter)
+        {
+            PreParameters.Add(parameter);
+        }
+
         #endregion IDataCommand
 
         protected abstract DbConnection CreateConnection(string connectionString);
@@ -182,22 +187,19 @@ namespace VIC.DataAccess.Core
         private void SetSpecialParameters(List<DbParameter> paramList)
         {
             var sps = PreParameters;
-            if (sps.Count > 0)
+            if (sps.Count == 0) return;
+            foreach (var sp in sps.GetParams().Where(j => j != null))
             {
-                paramList.Where(i => sps.Contains(i.ParameterName)).ToList()
-                    .ForEach(i =>
-                    {
-                        var sp = sps[i.ParameterName];
-                        if (sp != null)
-                        {
-                            i.DbType = sp.DbType;
-                            i.Size = sp.Size;
-                            i.IsNullable = sp.IsNullable;
-                            i.Direction = sp.Direction;
-                            i.Precision = sp.Precision;
-                            i.Scale = sp.Scale;
-                        }
-                    });
+                var i = paramList.FirstOrDefault(j => j.ParameterName == sp.ParameterName);
+                if (i != null)
+                {
+                    i.DbType = sp.DbType;
+                    i.Size = sp.Size;
+                    i.IsNullable = sp.IsNullable;
+                    i.Direction = sp.Direction;
+                    i.Precision = sp.Precision;
+                    i.Scale = sp.Scale;
+                }
             }
         }
 

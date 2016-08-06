@@ -5,16 +5,18 @@ namespace VIC.DataAccess.Config
 {
     public class DbSql
     {
-        public string SqlName { get; set; }
-
-        public string ConnectionName { get; set; }
+        public string CommandName { get; set; }
 
         internal string ConnectionString { get; set; }
 
-        public string Sql { get; set; }
+        public string Text { get; set; }
 
         public CommandType Type { get; set; }
 
-        public Dictionary<string, DataParameter> SpecialParameters { get; set; }
+        public List<DataParameter> PreParameters { get; set; }
+
+        public int Timeout { get; internal set; }
+
+        public string ConnectionName { get; internal set; }
     }
 }
