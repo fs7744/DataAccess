@@ -9,7 +9,7 @@ using VIC.DataAccess.Abstraction.Converter;
 
 namespace VIC.DataAccess.Core.Converter
 {
-    public class ParamConverter : IParamConverter
+    public abstract class ParamConverter : IParamConverter
     {
         protected ConcurrentDictionary<Type, Func<dynamic, List<DbParameter>>> _PCs =
            new ConcurrentDictionary<Type, Func<dynamic, List<DbParameter>>>();
@@ -21,6 +21,8 @@ namespace VIC.DataAccess.Core.Converter
             _DC = dc;
         }
 
+        protected abstract Type GetParameterType();
+
         public List<DbParameter> Convert(Type type, dynamic parameters)
         {
             return _PCs.GetOrAdd(type, (Type t) =>
@@ -30,8 +32,8 @@ namespace VIC.DataAccess.Core.Converter
                 var passign = Expression.Assign(p, Expression.Convert(o, t));
                 var vs = Expression.Variable(TypeHelper.SqlParameterListType, "vs");
                 var vsAssign = Expression.Assign(vs, Expression.New(TypeHelper.SqlParameterListType));
-                var v = Expression.Variable(TypeHelper.SqlParameterType, "v");
-                var vAssign = Expression.Assign(v, Expression.New(TypeHelper.SqlParameterType));
+                var v = Expression.Variable(GetParameterType(), "v");
+                var vAssign = Expression.Assign(v, Expression.New(GetParameterType()));
                 var ps = TypeExtensions.GetProperties(t, BindingFlags.Instance | BindingFlags.Public)
                 .Where(i => i.CanRead)
                 .Select(i =>

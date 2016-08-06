@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using VIC.DataAccess.Core;
 
-namespace VIC.DataAccess.Core
+namespace VIC.DataAccess.MSSql.Core
 {
     public class BulkCopyDataReader<T> : ListDataReader<T>
     {

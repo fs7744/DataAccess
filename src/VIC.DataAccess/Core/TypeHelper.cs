@@ -7,7 +7,6 @@ namespace VIC.DataAccess.Core
 {
     public static class TypeHelper
     {
-        public static Type SqlParameterType = typeof(DbParameter);
         public static readonly Type SqlParameterListType = typeof(List<DbParameter>);
         public static readonly Type NullableType = typeof(Nullable<>);
         public static readonly Type DbDataReaderType = typeof(DbDataReader);
