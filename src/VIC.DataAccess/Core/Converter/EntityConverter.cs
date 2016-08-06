@@ -58,9 +58,10 @@ namespace VIC.DataAccess.Core.Converter
             var switchCases = TypeExtensions.GetProperties(type, BindingFlags.Instance | BindingFlags.Public)
             .Where(i => i.CanWrite)
             .Select(i => Expression.SwitchCase(
-                Expression.Block(TypeHelper.VoidType, Expression.Assign(Expression.Property(v, i),
+                Expression.Block(TypeHelper.VoidType, Expression.IfThen(Expression.Not(Expression.Call(r, "IsDBNull", new Type[0], new Expression[] { index })),
+                    Expression.Assign(Expression.Property(v, i),
                     Expression.Call(r, _FC.Convert(i.PropertyType),
-                        new Type[0], new Expression[1] { index }))), Expression.Constant(i.Name.GetHashCode(), TypeHelper.IntType))).ToArray();
+                        new Type[0], new Expression[] { index }))), Expression.Constant(i.Name.GetHashCode(), TypeHelper.IntType)))).ToArray();
 
             var dd = Expression.Switch(name, switchCases);
             return Expression.Lambda<Action<dynamic, int, int, DbDataReader>>(

@@ -21,15 +21,14 @@ namespace VIC.DataAccess.Core
             var type = typeof(T);
             var properties = TypeExtensions.GetProperties(type,
                     BindingFlags.Instance |
-                    BindingFlags.Public |
-                    BindingFlags.DeclaredOnly).Where(i => i.CanRead);
+                    BindingFlags.Public).Where(i => i.CanRead);
             var index = 0;
             foreach (var property in properties)
             {
                 _NameIndexs.Add(property.Name, index++);
                 _PropertyInfos.Add(property);
                 var v = Expression.Parameter(type, "v");
-                var func = Expression.Lambda<Func<T, dynamic>>(Expression.Property(v, property), v).Compile();
+                var func = Expression.Lambda<Func<T, dynamic>>(Expression.Convert(Expression.Property(v, property), TypeHelper.ObjectType), v).Compile();
                 _Getters.Add(func);
             }
         }
@@ -38,7 +37,7 @@ namespace VIC.DataAccess.Core
         {
             get
             {
-                return _Getters[_NameIndexs[name]](_Data.Current);
+                return GetDynamicValue(_NameIndexs[name]);
             }
         }
 
@@ -46,7 +45,7 @@ namespace VIC.DataAccess.Core
         {
             get
             {
-                return _Getters[ordinal](_Data.Current);
+                return GetDynamicValue(ordinal);
             }
         }
 
@@ -92,27 +91,27 @@ namespace VIC.DataAccess.Core
 
         public override bool GetBoolean(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override byte GetByte(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
         {
-            return _Getters[ordinal](_Data.Current);
+            throw new NotSupportedException();
         }
 
         public override char GetChar(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
         {
-            return _Getters[ordinal](_Data.Current);
+            throw new NotSupportedException();
         }
 
         public override string GetDataTypeName(int ordinal)
@@ -122,17 +121,17 @@ namespace VIC.DataAccess.Core
 
         public override DateTime GetDateTime(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override decimal GetDecimal(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override double GetDouble(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override IEnumerator GetEnumerator()
@@ -147,27 +146,27 @@ namespace VIC.DataAccess.Core
 
         public override float GetFloat(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override Guid GetGuid(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override short GetInt16(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override int GetInt32(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override long GetInt64(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override string GetName(int ordinal)
@@ -182,7 +181,7 @@ namespace VIC.DataAccess.Core
 
         public override string GetString(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override object GetValue(int ordinal)
@@ -202,7 +201,7 @@ namespace VIC.DataAccess.Core
 
         public override bool IsDBNull(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current) == null;
+            return GetDynamicValue(ordinal) == null;
         }
 
         public override bool NextResult()
@@ -213,6 +212,11 @@ namespace VIC.DataAccess.Core
         public override bool Read()
         {
             return _Data.MoveNext();
+        }
+
+        private dynamic GetDynamicValue(int ordinal)
+        {
+            return _Getters[ordinal](_Data.Current);
         }
     }
 }

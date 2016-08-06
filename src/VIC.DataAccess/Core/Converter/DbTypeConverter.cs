@@ -24,9 +24,8 @@ namespace VIC.DataAccess.Core.Converter
 
         public DbType Convert(Type type)
         {
-            var result = DbType.String;
-            _DCs.TryGetValue(type.GetRealType(), out result);
-            return result;
+            DbType result;
+            return _DCs.TryGetValue(type.GetRealType(), out result) ? result : DbType.String;
         }
     }
 }

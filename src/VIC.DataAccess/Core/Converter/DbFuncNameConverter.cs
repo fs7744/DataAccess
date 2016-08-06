@@ -23,9 +23,8 @@ namespace VIC.DataAccess.Core.Converter
 
         public string Convert(Type type)
         {
-            var result = "GetValue";
-            _FCs.TryGetValue(type.GetRealType(), out result);
-            return result;
+            var result = string.Empty;
+            return _FCs.TryGetValue(type.GetRealType(), out result) ? result : "GetValue";
         }
     }
 }
