@@ -1,4 +1,7 @@
 {
+  "title": "VIC.DataAccess",
+  "description": "Sql To Object Mapping Abstraction",
+  "copyright": "Victor.X.Qu",
   "version": "1.0.0-*",
 
   "packOptions": {

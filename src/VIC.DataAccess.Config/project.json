@@ -1,4 +1,7 @@
 {
+  "title": "VIC.DataAccess.Config",
+  "description": "Sql To Object Mapping's Config",
+  "copyright": "Victor.X.Qu",
   "version": "1.0.0-*",
 
   "packOptions": {

@@ -1,4 +1,7 @@
 ﻿{
+  "title": "VIC.ObjectConfig",
+  "description": "Config To Object Mapping",
+  "copyright": "Victor.X.Qu",
   "version": "1.0.0-*",
 
   "packOptions": {

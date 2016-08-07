@@ -1,9 +1,12 @@
 {
+  "title": "VIC.DataAccess.MSSql",
+  "description": "Sql To Object Mapping for MSSql",
+  "copyright": "Victor.X.Qu",
   "version": "1.0.0-*",
 
   "packOptions": {
     "authors": [ "Victor.X.Qu" ],
-    "description": "Sql To Object Mapping",
+    "description": "Sql To Object Mapping for MSSql",
     "projectUrl": "https://github.com/fs7744/DataAccess",
     "iconUrl": "https://github.com/fs7744/DataAccess/blob/master/aataaccess.png?raw=true",
     "licenseUrl": "https://github.com/fs7744/DataAccess/blob/master/LICENSE?raw=true",
