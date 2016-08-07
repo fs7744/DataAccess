@@ -39,7 +39,7 @@ namespace VIC.DataAccess.Core
 
         public int Timeout { get; set; }
 
-        public CommandType Type { get; set; }
+        public CommandType Type { get; set; } = CommandType.Text;
 
         public DataParameterCollection PreParameters { get; } = new DataParameterCollection();
 
