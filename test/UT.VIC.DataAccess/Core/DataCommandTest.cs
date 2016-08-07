@@ -1,5 +1,6 @@
 ﻿using Moq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -8,7 +9,6 @@ using VIC.DataAccess;
 using VIC.DataAccess.Core;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
-using System.Collections;
 
 namespace UT.VIC.DataAccess.Core
 {
@@ -69,7 +69,6 @@ namespace UT.VIC.DataAccess.Core
 
         public class TestDbParameterCollection : DbParameterCollection
         {
-
             public override int Count
             {
                 get
@@ -93,7 +92,6 @@ namespace UT.VIC.DataAccess.Core
 
             public override void AddRange(Array values)
             {
-               
             }
 
             public override void Clear()

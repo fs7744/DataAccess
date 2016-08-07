@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using UT.VIC.DataAccess.Core;
 using VIC.DataAccess.Core;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
@@ -91,6 +88,5 @@ namespace UT.VIC.DataAccess.Core
                 Assert.Equal(_Students[0].DateTime2, s1);
             }
         }
-
     }
 }
