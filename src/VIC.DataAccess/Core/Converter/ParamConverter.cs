@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
@@ -45,6 +46,7 @@ namespace VIC.DataAccess.Core.Converter
                                  Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(_DC.Convert(i.PropertyType))),
                                  Expression.Assign(Expression.Property(v, "Value"),Expression.Convert(Expression.Property(p, i),TypeHelper.ObjectType)),
                                  Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
+                                 Expression.Assign(Expression.Property(v, "Direction"),Expression.Constant(ParameterDirection.Input)),
                                  Expression.Call(vs,"Add",new Type[0] ,v)
                      });
                 }).ToList<Expression>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace UT.VIC.DataAccess.Core.Converter
 {
     public class DbTypeConverterTest
     {
-        private DbTypeConverter _Converter = new DbTypeConverter();
+        private IDbTypeConverter _Converter = new DbTypeConverter();
 
         [Theory]
         [InlineData(typeof(long), DbType.Int64)]

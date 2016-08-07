@@ -1,6 +1,7 @@
 ﻿using Moq;
 using System;
 using System.Data.Common;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace UT.VIC.DataAccess.Core.Converter
 {
     public class ScalarConverterTest
     {
-        private ScalarConverter _Converter = new ScalarConverter();
+        private IScalarConverter _Converter = new ScalarConverter();
 
         [Fact]
         public void TestScalarConvertInt64()

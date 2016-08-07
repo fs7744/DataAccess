@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace UT.VIC.DataAccess.Core.Converter
 {
     public class DbFuncNameConverterTest
     {
-        private DbFuncNameConverter _Converter = new DbFuncNameConverter();
+        private IDbFuncNameConverter _Converter = new DbFuncNameConverter();
 
         [Theory]
         [InlineData(typeof(long), "GetInt64")]
