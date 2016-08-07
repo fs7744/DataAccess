@@ -68,7 +68,6 @@ namespace UT.VIC.ObjectConfig
             }
         }
 
-
         public class TestChangeToken : IChangeToken
         {
             public List<Action<object>> Callback { get; private set; } = new List<Action<object>>();
