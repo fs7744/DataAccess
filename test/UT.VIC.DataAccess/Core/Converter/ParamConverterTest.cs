@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
@@ -106,7 +105,6 @@ namespace UT.VIC.DataAccess.Core.Converter
                     Assert.Equal(ps[i].GetMethod.Invoke(item, new object[0]), ds[i].Value);
                 }
             }
-            
         }
     }
 }

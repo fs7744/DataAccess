@@ -60,7 +60,7 @@ namespace UT.VIC.DataAccess.Core.Converter
         {
             var readerMock = new Mock<DbDataReader>();
             readerMock.SetupSequence(i => i.GetDateTime(0))
-                .Returns(new DateTime(1991,5,30))
+                .Returns(new DateTime(1991, 5, 30))
                 .Returns(new DateTime(1992, 5, 30));
             readerMock.SetupSequence(i => i.IsDBNull(0))
                 .Returns(false)
@@ -159,7 +159,6 @@ namespace UT.VIC.DataAccess.Core.Converter
             Assert.Equal(66, _Converter.Convert<byte?>(readerMock.Object));
             Assert.Null(_Converter.Convert<byte?>(readerMock.Object));
         }
-
 
         [Fact]
         public void TestScalarConvertGuid()
