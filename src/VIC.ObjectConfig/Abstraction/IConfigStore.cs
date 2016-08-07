@@ -6,6 +6,6 @@ namespace VIC.ObjectConfig.Abstraction
     {
         IFileProvider FileProvider { get; }
 
-        void Update(IConfigSource source);
+        bool Update(IConfigSource source);
     }
 }
