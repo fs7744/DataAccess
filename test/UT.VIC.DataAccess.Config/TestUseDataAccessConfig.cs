@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using VIC.DataAccess;
 using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Config;
@@ -37,7 +35,6 @@ namespace UT.VIC.DataAccess.Config
             return new TestDbConnection();
         }
     }
-
 
     public class TestDbConnection : DbConnection
     {
@@ -100,42 +97,11 @@ namespace UT.VIC.DataAccess.Config
             Assert.Null(command);
         }
 
-        private DbConfig c = new DbConfig()
-        {
-            ConnectionStrings = new List<DataConnection>() { new DataConnection() { ConnectionString = "test", Name = "te" } },
-            SqlConfigs = new List<DbSql>() { new DbSql()
-            {
-                 CommandName = "select",
-                  ConnectionName = "te",
-                   Text =  "sql",
-                    Timeout = 100,
-                     Type = System.Data.CommandType.TableDirect,
-                      PreParameters = new List<Parameter>()
-                      { new Parameter()
-                      { Type = System.Data.DbType.AnsiStringFixedLength,
-                           Direction = System.Data.ParameterDirection.Input,
-                            Name = "@go",
-                             Size = 56,
-                              IsNullable = false,
-                               Precision = 8,
-                                Scale = 8
-                      } }
-            } }
-        };
-
         [Fact]
         public void TestHasConfig()
         {
-            //var stream = new MemoryStream();
-            //var serializer = new System.Xml.Serialization.XmlSerializer(typeof(DbConfig));
-            //serializer.Serialize(stream, c);
-            //stream.Position = 0L;
-            //using (TextReader rader = new StreamReader(stream))
-            //{
-            //    var d = rader.ReadToEnd();
-            //}
             var sp = new ServiceCollection()
-                .AddTransient<IDataCommand,TestDataCommand>()
+                .AddTransient<IDataCommand, TestDataCommand>()
                 .UseDataAccessConfig(Directory.GetCurrentDirectory(), true, "test10.xml", "test11.xml", "test12.xml")
                 .BuildServiceProvider();
 
@@ -166,18 +132,13 @@ namespace UT.VIC.DataAccess.Config
             Assert.Equal(0, p.Precision);
             Assert.Equal(0, p.Scale);
 
-            var sql = @"
-      1
-      2
-      ";
-
             command = db.GetCommand("select1");
             Assert.NotNull(command);
             Assert.Equal("test1", command.ConnectionString);
             Assert.Equal(0, command.Timeout);
             Assert.Equal(CommandType.Text, command.Type);
-            Assert.Equal(sql, command.Text);
-
+            Assert.True(command.Text.Contains("1"));
+            Assert.True(command.Text.Contains("2"));
             command = db.GetCommand("select2");
             Assert.Null(command);
         }

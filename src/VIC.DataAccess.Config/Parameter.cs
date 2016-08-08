@@ -11,7 +11,6 @@ namespace VIC.DataAccess.Config
         [XmlAttribute]
         public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 
-
         [XmlAttribute]
         public DbType Type { get; set; }
 

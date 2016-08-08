@@ -13,7 +13,8 @@
       </PreParameters>
     </DbSql>
     <DbSql CommandName="select1" Type="Text" ConnectionName="te1">
-      <Text><![CDATA[
+      <Text>
+        <![CDATA[
       1
       2
       ]]>

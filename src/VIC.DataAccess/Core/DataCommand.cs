@@ -138,6 +138,7 @@ namespace VIC.DataAccess.Core
             }
             return _Tran;
         }
+
         #endregion IDataCommand
 
         protected abstract DbConnection CreateConnection(string connectionString);
