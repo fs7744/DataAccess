@@ -312,7 +312,7 @@ namespace UT.VIC.DataAccess.Core
         {
             var command = new TestDataCommand();
             var p = new DataParameter() { ParameterName = "test" };
-            command.AddPreParam(p);
+            command.PreParameters.Add(p);
             Assert.True(command.PreParameters.Contains(p));
             command.Text = "sql";
             Assert.Equal("sql", command.Text);

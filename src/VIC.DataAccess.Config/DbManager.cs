@@ -30,7 +30,7 @@ namespace VIC.DataAccess.Config
         public IDataCommand GetCommand(string commandName)
         {
             DbSql sql = null;
-            return SqlConfigs.TryGetValue(commandName, out sql) ? CreateCommand(sql) : null;
+            return SqlConfigs != null && SqlConfigs.TryGetValue(commandName, out sql) ? CreateCommand(sql) : null;
         }
 
         protected IDataCommand CreateCommand(DbSql sql)
@@ -40,7 +40,7 @@ namespace VIC.DataAccess.Config
             command.Text = sql.Text;
             command.Type = sql.Type;
             command.Timeout = sql.Timeout;
-            sql.PreParameters?.ForEach(i => command.AddPreParam(i));
+            sql.PreParameters?.ForEach(i => command.PreParameters.Add(i.ToDataParameter()));
             return command;
         }
     }

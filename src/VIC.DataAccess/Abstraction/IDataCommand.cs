@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using VIC.DataAccess.Core;
 
 namespace VIC.DataAccess.Abstraction
 {
@@ -17,7 +18,7 @@ namespace VIC.DataAccess.Abstraction
 
         CommandType Type { get; set; }
 
-        void AddPreParam(DataParameter parameter);
+        DataParameterCollection PreParameters { get; }
 
         Task<List<T>> ExecuteEntityListAsync<T>(dynamic paramter = null);
 

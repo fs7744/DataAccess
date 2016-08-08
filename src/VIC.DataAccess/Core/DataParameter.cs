@@ -9,7 +9,7 @@ namespace VIC.DataAccess
         public DbType DbType { get; set; }
 
         public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
-
+        
         public bool IsNullable { get; set; } = true;
 
         private string _ParameterName;

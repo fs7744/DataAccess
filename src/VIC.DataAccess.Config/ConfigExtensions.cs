@@ -16,7 +16,6 @@ namespace VIC.DataAccess.Config
                 .Add(new XmlConfigFileProvider<DbConfig>(DbManager.DbConfigKey, isWatch, BuildConfig, xmlFiles))
                 .Build();
             service.AddSingleton<IDbManager>(i => new DbManager(config, i));
-            service.BuildServiceProvider();
             return service;
         }
 
@@ -30,8 +29,8 @@ namespace VIC.DataAccess.Config
             foreach (var i in vs)
             {
                 var c = await i;
-                c.ConnectionStrings?.ForEach(x => css.Add(x.Name, x.ConnectionString));
-                c.SqlConfigs?.ForEach(x => config.Sqls.Add(x.CommandName, x));
+                c?.ConnectionStrings?.ForEach(x => css.Add(x.Name, x.ConnectionString));
+                c?.SqlConfigs?.ForEach(x => config.Sqls.Add(x.CommandName, x));
             }
             foreach (var item in config.Sqls.Values)
             {

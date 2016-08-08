@@ -138,12 +138,6 @@ namespace VIC.DataAccess.Core
             }
             return _Tran;
         }
-
-        public void AddPreParam(DataParameter parameter)
-        {
-            PreParameters.Add(parameter);
-        }
-
         #endregion IDataCommand
 
         protected abstract DbConnection CreateConnection(string connectionString);
