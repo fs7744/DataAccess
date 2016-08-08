@@ -1,4 +1,6 @@
-namespace VIC.DataAccess.DynamicCondition
+using VIC.DataAccess.DynamicCondition;
+
+namespace VIC.DataAccess.MSSql
 {
     public static class ConditionOperaterExtensions
     {
@@ -37,9 +39,9 @@ namespace VIC.DataAccess.DynamicCondition
             return new InfixConditionOperater(field, "BETWEEN", $"{left} AND {right}");
         }
 
-        public static IConditionOperater Like(this string field, string left, string right)
+        public static IConditionOperater Like(this string field, string paramter)
         {
-            return new InfixConditionOperater(field, "BETWEEN", $"{left} LIKE {right}");
+            return new InfixConditionOperater(field, "LIKE", paramter);
         }
 
         public static IConditionOperater In(this string field, params string[] paramters)
