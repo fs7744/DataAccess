@@ -5,8 +5,8 @@
   },
 
   "dependencies": {
-    "VIC.DataAccess.MSSql": "1.0.0",
-    "VIC.DataAccess.Config": "1.0.0"
+    "VIC.DataAccess.MSSql": "1.0.1",
+    "VIC.DataAccess.Config": "1.0.1"
   },
 
   "frameworks": {
