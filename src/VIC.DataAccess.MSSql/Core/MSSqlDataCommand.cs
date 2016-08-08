@@ -2,13 +2,14 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core;
 
 namespace VIC.DataAccess.MSSql.Core
 {
-    public class MSSqlDataCommand : SqlDataCommand
+    public class MSSqlDataCommand : DataCommand
     {
-        public MSSqlDataCommand(DbSql sql) : base(sql)
+        public MSSqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
         {
         }
 
@@ -23,7 +24,7 @@ namespace VIC.DataAccess.MSSql.Core
             await conn.OpenAsync();
             using (var sqlBulkCopy = new SqlBulkCopy(conn))
             {
-                sqlBulkCopy.DestinationTableName = CommandText;
+                sqlBulkCopy.DestinationTableName = Text;
                 var reader = new BulkCopyDataReader<T>(data);
                 reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
                 await sqlBulkCopy.WriteToServerAsync(reader);

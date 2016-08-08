@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DbConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ConnectionStrings>
+    <DataConnection Name="te" ConnectionString="test" />
+    <DataConnection Name="te1" ConnectionString="test1" />
+  </ConnectionStrings>
+  <SqlConfigs>
+    <DbSql CommandName="select" Type="TableDirect" Timeout="100" ConnectionName="te">
+      <Text>sql</Text>
+      <PreParameters>
+        <Parameter Name="@go" Direction="Input" Type="AnsiStringFixedLength" Size="56" IsNullable="false" Precision="8" Scale="8" />
+        <Parameter Name="@go1" Direction="Output" Type="AnsiString" />
+      </PreParameters>
+    </DbSql>
+    <DbSql CommandName="select1" Type="Text" ConnectionName="te1">
+      <Text>
+        <![CDATA[
+      1
+      2
+      ]]>
+      </Text>
+    </DbSql>
+  </SqlConfigs>
+</DbConfig>

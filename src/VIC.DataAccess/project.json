@@ -1,12 +1,15 @@
 {
+  "title": "VIC.DataAccess",
+  "description": "Sql To Object Mapping Abstraction",
+  "copyright": "Victor.X.Qu",
   "version": "1.0.0-*",
 
   "packOptions": {
     "authors": [ "Victor.X.Qu" ],
     "description": "Sql To Object Mapping",
     "projectUrl": "https://github.com/fs7744/DataAccess",
-    "iconUrl": "https://github.com/fs7744/DataAccess/blob/master/aataaccess.png",
-    "licenseUrl": "https://github.com/fs7744/DataAccess/blob/master/LICENSE",
+    "iconUrl": "https://github.com/fs7744/DataAccess/blob/master/aataaccess.png?raw=true",
+    "licenseUrl": "https://github.com/fs7744/DataAccess/blob/master/LICENSE?raw=true",
     "repository": {
       "type": "git",
       "url": "https://github.com/fs7744/DataAccess.git"

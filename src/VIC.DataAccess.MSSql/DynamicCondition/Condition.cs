@@ -1,18 +1,18 @@
 using System.Text;
-using VIC.DataAccess.Abstratiion;
 
 namespace VIC.DataAccess.DynamicCondition
 {
     public class Condition
     {
-        private IDataCommand _Command;
-        private string _Placeholder;
-        private StringBuilder _SB = new StringBuilder("WHERE");
+        protected string _Sql;
+        protected string _Placeholder;
+        protected StringBuilder _SB = new StringBuilder("WHERE");
 
-        public Condition(IDataCommand command, string placeholder)
+        public Condition(string sql, string placeholder, IConditionOperater op)
         {
-            _Command = command;
+            _Sql = sql;
             _Placeholder = placeholder;
+            _SB.Append($" {op.ToString()}");
         }
 
         public Condition And(IConditionOperater op)
@@ -27,10 +27,14 @@ namespace VIC.DataAccess.DynamicCondition
             return this;
         }
 
-        public void Apply()
+        public string Build()
         {
-            if (string.IsNullOrEmpty(_Command.CommandText)) return;
-            _Command.CommandText = _Command.CommandText.Replace(_Placeholder, _SB.ToString());
+            return _Sql?.Replace(_Placeholder, _SB.ToString()) ?? string.Empty;
+        }
+
+        public string BuildToSubQuery()
+        {
+            return $"({Build()})";
         }
     }
 }

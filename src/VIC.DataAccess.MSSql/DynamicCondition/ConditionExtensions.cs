@@ -1,12 +1,12 @@
-using VIC.DataAccess.Abstratiion;
+using VIC.DataAccess.DynamicCondition;
 
-namespace VIC.DataAccess.DynamicCondition
+namespace VIC.DataAccess.MSSql
 {
     public static class ConditionExtensions
     {
-        public static Condition Where(this IDataCommand command, string placeholder = "#where#")
+        public static Condition Where(this string sql, IConditionOperater op, string placeholder = "#where#")
         {
-            return new Condition(command, placeholder);
+            return new Condition(sql, placeholder, op);
         }
     }
 }
