@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DbConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ConnectionStrings>
+    <DataConnection Name="Test" ConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TestDataAccess;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+  </ConnectionStrings>
+  <SqlConfigs>
+    <DbSql CommandName="SelectByName" Type="Text" ConnectionName="Test">
+      <Text>
+        <![CDATA[
+SELECT top 1
+    Id
+    ,Age
+    ,Name
+    ,JoinDate
+    ,[Money]
+FROM [dbo].[Students] WITH(NOLOCK)
+WHERE @Name = Name
+      ]]>
+      </Text>
+      <PreParameters>
+        <Parameter Name="@Name" Direction="Input" Type="AnsiString" />
+      </PreParameters>
+    </DbSql>
+    <DbSql CommandName="SelectAll" Type="Text" ConnectionName="Test">
+      <Text>
+        <![CDATA[
+SELECT
+    Id
+    ,Age
+    ,Name
+    ,JoinDate
+    ,[Money]
+FROM [dbo].[Students] WITH(NOLOCK)
+      ]]>
+      </Text>
+    </DbSql>
+    <DbSql CommandName="SelectAllAge" Type="Text" ConnectionName="Test">
+      <Text>
+        <![CDATA[
+SELECT
+    sum(Age) as Age
+FROM [dbo].[Students] WITH(NOLOCK)
+      ]]>
+      </Text>
+    </DbSql>
+    <DbSql CommandName="Clear" Type="Text" ConnectionName="Test">
+      <Text>
+        <![CDATA[
+delete from [dbo].[Students]
+      ]]>
+      </Text>
+    </DbSql>
+    <DbSql CommandName="BulkCopy" Type="Text" ConnectionName="Test">
+      <Text>
+        <![CDATA[
+[dbo].[Students]
+      ]]>
+      </Text>
+    </DbSql>
+  </SqlConfigs>
+</DbConfig>
