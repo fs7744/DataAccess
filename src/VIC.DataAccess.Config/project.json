@@ -2,7 +2,7 @@
   "title": "VIC.DataAccess.Config",
   "description": "Sql To Object Mapping's Config",
   "copyright": "Victor.X.Qu",
-  "version": "1.0.0-*",
+  "version": "1.0.1-*",
 
   "packOptions": {
     "authors": [ "Victor.X.Qu" ],
@@ -17,9 +17,8 @@
   },
 
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
-    "VIC.ObjectConfig": "1.0.0",
-    "VIC.DataAccess": "1.0.0"
+    "VIC.ObjectConfig": "1.0.1",
+    "VIC.DataAccess": "1.0.1"
   },
 
   "frameworks": {
