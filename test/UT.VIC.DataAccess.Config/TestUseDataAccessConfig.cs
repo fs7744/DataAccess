@@ -9,6 +9,9 @@ using VIC.DataAccess.Config;
 using VIC.DataAccess.Core;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
+using VIC.ObjectConfig;
+using VIC.ObjectConfig.Xml;
+using System.Collections.Generic;
 
 namespace UT.VIC.DataAccess.Config
 {
@@ -88,7 +91,7 @@ namespace UT.VIC.DataAccess.Config
         public void TestNoConfig()
         {
             var sp = new ServiceCollection()
-                .UseDataAccessConfig(Directory.GetCurrentDirectory(), true, "test0.xml", "test1.xml")
+                .UseDataAccessConfig(Directory.GetCurrentDirectory(), true, null, "test0.xml", "test1.xml")
                 .BuildServiceProvider();
 
             var db = sp.GetService<IDbManager>();
@@ -102,7 +105,7 @@ namespace UT.VIC.DataAccess.Config
         {
             var sp = new ServiceCollection()
                 .AddTransient<IDataCommand, TestDataCommand>()
-                .UseDataAccessConfig(Directory.GetCurrentDirectory(), true, "test10.xml", "test11.xml", "test12.xml")
+                .UseDataAccessConfig(Directory.GetCurrentDirectory(), true, null, "test10.xml", "test11.xml", "test12.xml")
                 .BuildServiceProvider();
 
             var db = sp.GetService<IDbManager>();
@@ -141,6 +144,70 @@ namespace UT.VIC.DataAccess.Config
             Assert.True(command.Text.Contains("2"));
             command = db.GetCommand("select2");
             Assert.Null(command);
+
+            command = db.GetCommand("select3");
+            Assert.NotNull(command);
+            Assert.Null(command.ConnectionString);
+            Assert.Equal(0, command.Timeout);
+            Assert.Equal(CommandType.Text, command.Type);
+            Assert.True(command.Text.Contains("1"));
+            Assert.True(command.Text.Contains("2"));
+        }
+
+        [Fact]
+        public void TestMergeDataAccessConfig()
+        {
+            var sp = new ServiceCollection()
+                .AddTransient<IDataCommand, TestDataCommand>()
+                .UseDataAccessConfig(Directory.GetCurrentDirectory(), true,
+                new DbConfig[] { new DbConfig() {ConnectionStrings = new List<DataConnection>() {
+                    new DataConnection(){ Name = "te2",ConnectionString= "sds"}
+                } }}
+                , "test10.xml", "test11.xml", "test12.xml")
+                .BuildServiceProvider();
+
+            var db = sp.GetService<IDbManager>();
+            var command = db.GetCommand("select");
+            Assert.NotNull(command);
+            Assert.Equal("test", command.ConnectionString);
+            Assert.Equal(100, command.Timeout);
+            Assert.Equal(CommandType.TableDirect, command.Type);
+            Assert.Equal("sql", command.Text);
+            Assert.Equal(2, command.PreParameters.Count);
+            var p = command.PreParameters["@go"];
+            Assert.Equal("@go", p.ParameterName);
+            Assert.Equal(ParameterDirection.Input, p.Direction);
+            Assert.Equal(DbType.AnsiStringFixedLength, p.DbType);
+            Assert.Equal(56, p.Size);
+            Assert.Equal(false, p.IsNullable);
+            Assert.Equal(8, p.Precision);
+            Assert.Equal(8, p.Scale);
+
+            p = command.PreParameters["@go1"];
+            Assert.Equal("@go1", p.ParameterName);
+            Assert.Equal(ParameterDirection.Output, p.Direction);
+            Assert.Equal(DbType.AnsiString, p.DbType);
+            Assert.Equal(0, p.Size);
+            Assert.Equal(true, p.IsNullable);
+            Assert.Equal(0, p.Precision);
+            Assert.Equal(0, p.Scale);
+
+            command = db.GetCommand("select1");
+            Assert.NotNull(command);
+            Assert.Equal("test1", command.ConnectionString);
+            Assert.Equal(0, command.Timeout);
+            Assert.Equal(CommandType.Text, command.Type);
+            Assert.True(command.Text.Contains("1"));
+            Assert.True(command.Text.Contains("2"));
+            command = db.GetCommand("select2");
+            Assert.Null(command);
+            command = db.GetCommand("select3");
+            Assert.NotNull(command);
+            Assert.Equal("sds", command.ConnectionString);
+            Assert.Equal(0, command.Timeout);
+            Assert.Equal(CommandType.Text, command.Type);
+            Assert.True(command.Text.Contains("1"));
+            Assert.True(command.Text.Contains("2"));
         }
     }
 }
