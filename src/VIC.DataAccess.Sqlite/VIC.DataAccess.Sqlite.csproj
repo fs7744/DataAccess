@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>2.0.0-beta</Version>
+    <Authors>Victor.X.Qu</Authors>
+    <Company>Victor.X.Qu</Company>
+    <Description>dotnet core DataAccess Component : sqllite</Description>
+    <PackageReleaseNotes>update for netstandard2.0</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

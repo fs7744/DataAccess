@@ -5,6 +5,13 @@
     <Version>2.0.0-beta</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Company>Victor.X.Qu</Company>
+    <Authors>Victor.X.Qu</Authors>
+    <Description>dotnet core DataAccess Component : core</Description>
+    <PackageReleaseNotes>update for netstandard2.0</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

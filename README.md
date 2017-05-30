@@ -6,7 +6,7 @@ Email: fs7744@hotmail.com
 
 DataAccess is a c# project for sql data mapping to object, like dapper
 
-DataAccess is for net core , so it base on netstandard1.3
+DataAccess is for net core , and now it base on netstandard2.0
 
 ## db supports
 DataAccess base on ado.net, so you can use blow db :
@@ -22,11 +22,9 @@ DataAccess base on ado.net, so you can use blow db :
 
 ##### dependencies
 
-``` json
-  "dependencies": {
-    "VIC.DataAccess.MSSql": "1.0.2",
-    "VIC.DataAccess.Config": "1.0.2"
-  },
+``` xml
+    <PackageReference Include="VIC.DataAccess.Config" Version="2.0.0-beta" />
+    <PackageReference Include="VIC.DataAccess.MSSql" Version="2.0.0-beta" />
 ```
 
 You can config sql in xml file for DataAcces, like:
@@ -125,10 +123,8 @@ int? age = await command.ExecuteScalarAsync<int?>();
 
 ##### dependencies
 
-``` json
-  "dependencies": {
-    "VIC.DataAccess.MSSql": "1.0.2"
-  },
+``` xml
+    <PackageReference Include="VIC.DataAccess.MSSql" Version="2.0.0-beta" />
 ```
 
 ``` csharp
