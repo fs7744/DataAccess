@@ -24,8 +24,8 @@ DataAccess base on ado.net, so you can use blow db :
 
 ``` json
   "dependencies": {
-    "VIC.DataAccess.MSSql": "1.0.1",
-    "VIC.DataAccess.Config": "1.0.1"
+    "VIC.DataAccess.MSSql": "1.0.2",
+    "VIC.DataAccess.Config": "1.0.2"
   },
 ```
 
@@ -127,7 +127,7 @@ int? age = await command.ExecuteScalarAsync<int?>();
 
 ``` json
   "dependencies": {
-    "VIC.DataAccess.MSSql": "1.0.1"
+    "VIC.DataAccess.MSSql": "1.0.2"
   },
 ```
 

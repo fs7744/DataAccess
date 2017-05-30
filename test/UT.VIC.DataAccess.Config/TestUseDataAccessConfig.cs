@@ -119,7 +119,7 @@ namespace UT.VIC.DataAccess.Config
             Assert.Equal(ParameterDirection.Input, p.Direction);
             Assert.Equal(DbType.AnsiStringFixedLength, p.DbType);
             Assert.Equal(56, p.Size);
-            Assert.Equal(false, p.IsNullable);
+            Assert.False(p.IsNullable);
             Assert.Equal(8, p.Precision);
             Assert.Equal(8, p.Scale);
 
@@ -128,7 +128,7 @@ namespace UT.VIC.DataAccess.Config
             Assert.Equal(ParameterDirection.Output, p.Direction);
             Assert.Equal(DbType.AnsiString, p.DbType);
             Assert.Equal(0, p.Size);
-            Assert.Equal(true, p.IsNullable);
+            Assert.True(p.IsNullable);
             Assert.Equal(0, p.Precision);
             Assert.Equal(0, p.Scale);
 
