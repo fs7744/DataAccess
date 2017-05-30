@@ -169,7 +169,7 @@ namespace MSSqlExample
              {
                  _Provider = new ServiceCollection()
                      .UseDataAccess()
-                     .UseDataAccessConfig(Directory.GetCurrentDirectory(), false, "db.xml")
+                     .UseDataAccessConfig(Directory.GetCurrentDirectory(), false,null, "db.xml")
                      .BuildServiceProvider();
 
                  _DB = _Provider.GetService<IDbManager>();

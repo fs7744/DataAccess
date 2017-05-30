@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0-beta</Version>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Company>Victor.X.Qu</Company>
+    <Authors>Victor.X.Qu</Authors>
+    <Description>dotnet core DataAccess Component : core</Description>
+    <PackageReleaseNotes>update for netstandard2.0</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0-preview1-25305-02" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0-preview1-final" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0-preview1-25305-02" />
+  </ItemGroup>
+
+</Project>
