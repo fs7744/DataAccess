@@ -5,17 +5,20 @@ using System.Threading.Tasks;
 
 namespace VIC.ObjectConfig.Json
 {
-    public class JsonConfigFileProvider<T> : ConfigFileProvider<T> where T : class, new()
+    public class JsonConfigFileProvider<T> : ConfigFileProvider<T> where T : class
     {
         public JsonConfigFileProvider(string key, bool isWatch, Func<Task<T>[], Task<T>> Aggregate, params string[] fileNames) : base(key, isWatch, Aggregate, fileNames)
         {
         }
 
-        protected override async Task<T> ToObject(Stream stream)
+        protected override Task<T> ToObject(Stream stream)
         {
-            using (TextReader reader = new StreamReader(stream))
+            JsonSerializer serializer = new JsonSerializer();
+            using (stream)
+            using (var sr = new StreamReader(stream))
+            using (JsonReader reader = new JsonTextReader(sr))
             {
-                return JsonConvert.DeserializeObject<T>(await reader.ReadToEndAsync());
+                return Task.FromResult(serializer.Deserialize<T>(reader));
             }
         }
     }

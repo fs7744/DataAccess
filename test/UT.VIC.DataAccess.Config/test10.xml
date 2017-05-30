@@ -20,5 +20,13 @@
       ]]>
       </Text>
     </DbSql>
+        <DbSql CommandName="select3" Type="Text" ConnectionName="te2">
+      <Text>
+        <![CDATA[
+      1
+      2
+      ]]>
+      </Text>
+    </DbSql>
   </SqlConfigs>
 </DbConfig>

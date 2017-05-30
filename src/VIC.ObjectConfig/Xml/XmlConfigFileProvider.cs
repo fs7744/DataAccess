@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace VIC.ObjectConfig.Xml
 {
-    public class XmlConfigFileProvider<T> : ConfigFileProvider<T> where T : class, new()
+    public class XmlConfigFileProvider<T> : ConfigFileProvider<T> where T : class
     {
         public XmlConfigFileProvider(string key, bool isWatch, Func<Task<T>[], Task<T>> Aggregate, params string[] fileNames) : base(key, isWatch, Aggregate, fileNames)
         {
@@ -13,8 +13,11 @@ namespace VIC.ObjectConfig.Xml
 
         protected override Task<T> ToObject(Stream stream)
         {
-            var serializer = new XmlSerializer(typeof(T));
-            return Task.FromResult((T)serializer.Deserialize(stream));
+            using (stream)
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                return Task.FromResult((T)serializer.Deserialize(stream));
+            }
         }
     }
 }

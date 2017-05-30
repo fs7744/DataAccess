@@ -6,7 +6,7 @@ using VIC.ObjectConfig.Abstraction;
 
 namespace VIC.ObjectConfig
 {
-    public abstract class ConfigFileProvider<T> : IConfigProvider where T : class, new()
+    public abstract class ConfigFileProvider<T> : IConfigProvider where T : class
     {
         protected string[] _FileNames;
 
