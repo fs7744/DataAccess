@@ -11,13 +11,7 @@ namespace Vic.Data
     public class EmitEntityConverter<T> : IEntityConverter<T> where T : class
     {
         protected Func<DbDataReader, T> cache;
-        protected readonly IDbValueGetConverter dbValueGetter;
         private readonly object _lock = new object();
-
-        public EmitEntityConverter(IDbValueGetConverter fc)
-        {
-            dbValueGetter = fc;
-        }
 
         public T Convert(DbDataReader reader)
         {

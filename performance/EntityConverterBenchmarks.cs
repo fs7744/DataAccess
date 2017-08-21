@@ -100,17 +100,17 @@ namespace performance
 
         private readonly ListDataReader<Student> reader;
         private readonly EmitEntityConverter<Student> _EmitEntityConverter;
-        private readonly ExpressionEntityConverter<Student> _ExpressionEntityConverter;
-        private readonly IDbValueGetConverter dbValueGetConverter = new DbValueGetConverter();
+        //private readonly ExpressionEntityConverter<Student> _ExpressionEntityConverter;
+        //private readonly IDbValueGetConverter dbValueGetConverter = new DbValueGetConverter();
 
         public EntityConverterBenchmarks()
         {
             reader = new ListDataReader<Student>(_Students);
-            _EmitEntityConverter = new EmitEntityConverter<Student>(dbValueGetConverter);
-            _ExpressionEntityConverter = new ExpressionEntityConverter<Student>(dbValueGetConverter);
+            _EmitEntityConverter = new EmitEntityConverter<Student>();
+            //_ExpressionEntityConverter = new ExpressionEntityConverter<Student>(dbValueGetConverter);
             reader.Read();
             _EmitEntityConverter.Convert(reader);
-            _ExpressionEntityConverter.Convert(reader);
+            //_ExpressionEntityConverter.Convert(reader);
         }
 
         [Benchmark]
@@ -119,10 +119,10 @@ namespace performance
             _EmitEntityConverter.Convert(reader);
         }
 
-        [Benchmark]
-        public void ExpressionEntityConverter()
-        {
-            _ExpressionEntityConverter.Convert(reader);
-        }
+        //[Benchmark]
+        //public void ExpressionEntityConverter()
+        //{
+        //    _ExpressionEntityConverter.Convert(reader);
+        //}
     }
 }
