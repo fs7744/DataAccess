@@ -186,7 +186,7 @@ namespace Vic.Data
 
         public override object GetValue(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override int GetValues(object[] values)
@@ -201,7 +201,7 @@ namespace Vic.Data
 
         public override bool IsDBNull(int ordinal)
         {
-            return GetDynamicValue(ordinal) == null;
+            return GetDynamicValue(ordinal) is DBNull;
         }
 
         public override bool NextResult()
@@ -216,7 +216,8 @@ namespace Vic.Data
 
         private dynamic GetDynamicValue(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            var value = _Getters[ordinal](_Data.Current);
+            return value ?? DBNull.Value;
         }
     }
 }

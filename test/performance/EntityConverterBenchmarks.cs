@@ -40,11 +40,11 @@ namespace performance
     {
         public DateTime DateTime2 { get; set; }
 
-        //public int? ClassNumber { get; set; }
+        public int? ClassNumber { get; set; }
 
-        //public long? Long2 { get; set; }
+        public long? Long2 { get; set; }
 
-        //public decimal? Decimal2 { get; set; }
+        public decimal? Decimal2 { get; set; }
 
         public double Double2 { get; set; }
 
@@ -69,7 +69,7 @@ namespace performance
             {
                 Age = 1,
                 Name = "Victor1",
-                //ClassNumber = 2,
+                ClassNumber = 2,
                 Long = 3L,
                 Decimal = 4M,
                 Byte = 2,
@@ -85,9 +85,9 @@ namespace performance
             {
                 Age = 3,
                 Name = "Victor3",
-                //ClassNumber = 2,
-                //Long2 = 3L,
-                //Decimal2 = 4M,
+                ClassNumber = 2,
+                Long2 = 3L,
+                Decimal2 = 4M,
                 Byte2 = 2,
                 DateTime2 = new DateTime(1990,2,3),
                 Double2 = 4.4D,
