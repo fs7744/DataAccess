@@ -8,12 +8,15 @@ using Vic.Data.Abstraction;
 
 namespace Vic.Data
 {
-    public class EmitEntityConverter<T> : IEntityConverter<T> where T : class
+    public class EmitEntityConverter<T> : IEntityConverter<T>
     {
-        protected Func<DbDataReader, T> cache;
+        protected Func<IDataReader, T> cache;
         private readonly object _lock = new object();
+        private readonly MethodInfo getItem = typeof(IDataRecord).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                        .Where(p => p.GetIndexParameters().Length > 0 && p.GetIndexParameters()[0].ParameterType == typeof(int))
+                        .Select(p => p.GetGetMethod()).First();
 
-        public T Convert(DbDataReader reader)
+        public T Convert(IDataReader reader)
         {
             if (cache == null)
             {
@@ -28,22 +31,14 @@ namespace Vic.Data
             return cache(reader);
         }
 
-        private Func<DbDataReader, T> CreateConverter(Type type, DbDataReader reader)
+        private Func<IDataReader, T> CreateConverter(Type type, IDataReader reader)
         {
-            var getItem = typeof(IDataRecord).GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                        .Where(p => p.GetIndexParameters().Length > 0 && p.GetIndexParameters()[0].ParameterType == typeof(int))
-                        .Select(p => p.GetGetMethod()).First();
             var dynamicMethod = new DynamicMethod($"invoker_{Guid.NewGuid()}", type, new Type[] { typeof(IDataReader) }, type, true);
             ILGenerator il = dynamicMethod.GetILGenerator();
 
             il.DeclareLocal(type);
-            //il.DeclareLocal(typeof(int));
-            //il.DeclareLocal(typeof(object));
             il.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
             il.Emit(OpCodes.Stloc_0);
-            //il.Emit(OpCodes.Ldc_I4_0);
-            //il.Emit(OpCodes.Stloc_1);
-            //il.BeginExceptionBlock();
             il.Emit(OpCodes.Ldloc_0);// [target]
 
             var setters = TypeExtensions.GetProperties(type, BindingFlags.Instance | BindingFlags.Public)
@@ -66,32 +61,18 @@ namespace Vic.Data
                 EmitInt(il, item.Item1);
                 var method = item.Item2.SetMethod;
                 var parameterType = method.GetParameters().Select(x => x.ParameterType).First();
-                //il.Emit(OpCodes.Dup);// stack is now [target][reader][index][index]
-                //il.Emit(OpCodes.Stloc_1);// stack is now [target][reader][index]
                 il.Emit(OpCodes.Callvirt, getItem);
-                //il.Emit(OpCodes.Callvirt, dbValueGetter.Convert(item.Item2.PropertyType));
-                //il.Emit(OpCodes.Dup); // stack is now [target][value-as-object][value-as-object]
-                //il.Emit(OpCodes.Stloc_2);
                 il.Emit(OpCodes.Dup); // stack is now [target][value][value]
                 il.Emit(OpCodes.Isinst, typeof(DBNull)); // stack is now [target][value-as-object][DBNull or null]
                 il.Emit(OpCodes.Brtrue_S, isDbNullLabel);
-                //if (parameterType.IsValueType)
-                //{
                 il.Emit(OpCodes.Unbox_Any, parameterType);
-                //}
-                //else
-                //{
-                //    il.EmitConvertFromObject(parameterType);
-                //}
                 il.Emit(OpCodes.Callvirt, method);
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Br_S, finishLabel);
                 il.MarkLabel(isDbNullLabel); // incoming stack: [target][value]
                 il.Emit(OpCodes.Pop); // stack is now [target]
-                //il.Emit(OpCodes.Pop);
                 il.MarkLabel(finishLabel);
             }
-            //il.Emit(OpCodes.Ldloc_0);
             il.Emit(OpCodes.Ret);
             var funcType = System.Linq.Expressions.Expression.GetFuncType(typeof(IDataReader), type);
             return (Func<IDataReader, T>)dynamicMethod.CreateDelegate(funcType);

@@ -1,9 +1,9 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 
 namespace Vic.Data.Abstraction
 {
-    public interface IEntityConverter<T> where T : class
+    public interface IEntityConverter<T>
     {
-        T Convert(DbDataReader reader);
+        T Convert(IDataReader reader);
     }
 }

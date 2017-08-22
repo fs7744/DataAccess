@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using Vic.Data.Abstraction;
+using Vic.ServiceLocation;
 using Xunit;
 
 namespace Vic.Data.Extensions.Test
 {
     public class EntityConverterTest
     {
-        private IEntityConverter<Student> _Converter = new EmitEntityConverter<Student>();
-
         private List<Student> _Students = new List<Student>()
         {
             new Student()
@@ -44,15 +45,24 @@ namespace Vic.Data.Extensions.Test
             },
         };
 
+        public EntityConverterTest()
+        {
+            var i = new ServiceCollection()
+                .UseVicData()
+                .BuildServiceProvider();
+            i.GetRequiredService<ServiceLocator>();
+        }
+
         [Fact(DisplayName = "EntityConvert")]
         public void TestEntityConvert()
         {
+            var converter = ServiceLocator.Current.GetRequiredService<IEntityConverter<Student>>();
             var type = typeof(Student);
             var reader = new ListDataReader<Student>(_Students);
             foreach (var item in _Students)
             {
                 reader.Read();
-                Student s = _Converter.Convert(reader);
+                Student s = converter.Convert(reader);
                 Assert.Equal(item.ClassNumber, s.ClassNumber);
                 Assert.Equal(item.Age, s.Age);
                 Assert.Equal(item.Bool, s.Bool);

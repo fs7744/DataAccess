@@ -57,6 +57,14 @@ namespace Vic.Data.Extensions.Test
         public Guid Guid2 { get; set; }
 
         public bool Bool2 { get; set; }
+
+        public TestEnum TestEnum { get; set; }
+    }
+
+    public enum TestEnum
+    {
+        None,
+        One
     }
 
     public class ListDataReaderTest
