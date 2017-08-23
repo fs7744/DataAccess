@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.9" />
+    <PackageReference Include="ChloeCore" Version="2.14.0" />
+    <PackageReference Include="ChloeCore.SqlServer" Version="2.14.0" />
+    <PackageReference Include="Dapper" Version="1.50.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,8 @@ namespace performance
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<EntityConverterBenchmarks>();
+            //new DapperBenchmarks().Dapper();
+            BenchmarkRunner.Run<DapperBenchmarks>();
         }
     }
 }
