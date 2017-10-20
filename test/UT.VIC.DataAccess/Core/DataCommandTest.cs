@@ -271,7 +271,7 @@ namespace UT.VIC.DataAccess.Core
 
         public class TestDataCommand : DataCommand
         {
-            public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter(new DbFuncNameConverter()))
+            public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter())
             {
             }
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.0-beta</Version>
+    <Version>2.0.1</Version>
     <Authors>Victor.X.Qu</Authors>
     <Company>Victor.X.Qu</Company>
     <Description>dotnet core DataAccess Component : sqllite</Description>
@@ -10,10 +10,11 @@
     <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

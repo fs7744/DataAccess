@@ -9,7 +9,7 @@ namespace UT.VIC.DataAccess.Core.Converter
 {
     public class EntityConverterTest
     {
-        private IEntityConverter _Converter = new EntityConverter(new DbFuncNameConverter());
+        private IEntityConverter _Converter = new EntityConverter();
 
         private List<Student> _Students = new List<Student>()
         {
