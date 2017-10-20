@@ -32,7 +32,7 @@ namespace MSSqlExample
                 await ExecuteTimer("First clear", async () =>
                 {
                     var command = _DB.GetCommand("Clear");
-                    var s = await command.ExecuteNonQueryAsync();
+                    var s = command.ExecuteNonQuery();
                     Console.WriteLine($"clear count : {s}");
                 });
 
