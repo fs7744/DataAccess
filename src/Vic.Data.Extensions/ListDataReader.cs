@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace VIC.DataAccess.Core
+namespace Vic.Data
 {
     public class ListDataReader<T> : DbDataReader
     {
@@ -28,7 +28,7 @@ namespace VIC.DataAccess.Core
                 _NameIndexs.Add(property.Name, index++);
                 _PropertyInfos.Add(property);
                 var v = Expression.Parameter(type, "v");
-                var func = Expression.Lambda<Func<T, dynamic>>(Expression.Convert(Expression.Property(v, property), TypeHelper.ObjectType), v).Compile();
+                var func = Expression.Lambda<Func<T, dynamic>>(Expression.Convert(Expression.Property(v, property), typeof(object)), v).Compile();
                 _Getters.Add(func);
             }
         }
@@ -186,7 +186,7 @@ namespace VIC.DataAccess.Core
 
         public override object GetValue(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
+            return GetDynamicValue(ordinal);
         }
 
         public override int GetValues(object[] values)
@@ -201,7 +201,7 @@ namespace VIC.DataAccess.Core
 
         public override bool IsDBNull(int ordinal)
         {
-            return GetDynamicValue(ordinal) == null;
+            return GetDynamicValue(ordinal) is DBNull;
         }
 
         public override bool NextResult()
@@ -216,12 +216,8 @@ namespace VIC.DataAccess.Core
 
         private dynamic GetDynamicValue(int ordinal)
         {
-            return _Getters[ordinal](_Data.Current);
-        }
-
-        public void Reset(IEnumerable<T> data)
-        {
-            _Data = data.GetEnumerator();
+            var value = _Getters[ordinal](_Data.Current);
+            return value ?? DBNull.Value;
         }
     }
 }

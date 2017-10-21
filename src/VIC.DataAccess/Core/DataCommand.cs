@@ -50,7 +50,7 @@ namespace VIC.DataAccess.Core
             _EC = ec;
         }
 
-        #region IDataCommand
+        #region AsyncIDataCommand
 
         public Task<DbDataReader> ExecuteDataReaderAsync(dynamic parameter = null, CommandBehavior behavior = CommandBehavior.Default)
         {
@@ -139,7 +139,59 @@ namespace VIC.DataAccess.Core
             return _Tran;
         }
 
-        #endregion IDataCommand
+        #endregion AsyncIDataCommand
+
+        #region SyncIDataCommand
+
+        public DbDataReader ExecuteDataReader(dynamic parameter = null, CommandBehavior behavior = CommandBehavior.Default)
+        {
+            return GetDataReader(behavior, parameter);
+        }
+
+        public T ExecuteEntity<T>(dynamic paramter = null)
+        {
+            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+            {
+                return reader.Read() ? _EC.Convert<T>(reader) : default(T);
+            }
+        }
+
+        public List<T> ExecuteEntityList<T>(dynamic paramter = null)
+        {
+            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
+            {
+                var list = new List<T>();
+                while (reader.Read())
+                {
+                    list.Add(_EC.Convert<T>(reader));
+                }
+
+                return list;
+            }
+        }
+
+        public IMultipleReader ExecuteMultiple(dynamic parameter = null)
+        {
+            DbDataReader reader = GetDataReaderAsync(CommandBehavior.Default, parameter);
+            return new MultipleReader(reader, _SC, _EC);
+        }
+
+        public T ExecuteScalar<T>(dynamic paramter = null)
+        {
+            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+            {
+                return reader.Read() ? _SC.Convert<T>(reader) : default(T);
+            }
+        }
+
+        public int ExecuteNonQuery(dynamic parameter = null)
+        {
+            DbCommand command = CreateCommand(parameter);
+            Open();
+            return command.ExecuteNonQuery();
+        }
+
+        #endregion SyncIDataCommand
 
         protected abstract DbConnection CreateConnection(string connectionString);
 
@@ -150,6 +202,18 @@ namespace VIC.DataAccess.Core
             DbCommand command = CreateCommand(parameter);
             await OpenAsync(cancellationToken);
             return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection | behavior, cancellationToken);
+        }
+
+        private DbDataReader GetDataReader(CommandBehavior behavior, dynamic parameter = null)
+        {
+            DbCommand command = CreateCommand(parameter);
+            Open();
+            return command.ExecuteReader(CommandBehavior.CloseConnection | behavior);
+        }
+
+        private void Open()
+        {
+            _Conn.Open();
         }
 
         private Task OpenAsync(CancellationToken cancellationToken)

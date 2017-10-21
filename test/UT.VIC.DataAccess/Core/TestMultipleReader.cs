@@ -74,7 +74,7 @@ namespace UT.VIC.DataAccess.Core
 
             var data = new List<List<Student>>() { _Students, _Students, _Students }.GetEnumerator();
             data.MoveNext();
-            using (var reader = new MultipleReader(new SetDataReader<Student>(data), new ScalarConverter(), new EntityConverter(new DbFuncNameConverter())))
+            using (var reader = new MultipleReader(new SetDataReader<Student>(data), new ScalarConverter(), new EntityConverter()))
             {
                 var s = await reader.ExecuteEntityAsync<Student>();
                 test(_Students[0], s);

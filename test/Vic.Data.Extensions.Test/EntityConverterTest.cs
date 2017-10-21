@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
-using VIC.DataAccess.Abstraction.Converter;
-using VIC.DataAccess.Core;
-using VIC.DataAccess.Core.Converter;
+using System.Data;
+using Vic.Data.Abstraction;
+using Vic.ServiceLocation;
 using Xunit;
 
-namespace UT.VIC.DataAccess.Core.Converter
+namespace Vic.Data.Extensions.Test
 {
     public class EntityConverterTest
     {
-        private IEntityConverter _Converter = new EntityConverter();
-
         private List<Student> _Students = new List<Student>()
         {
             new Student()
@@ -33,7 +32,7 @@ namespace UT.VIC.DataAccess.Core.Converter
             {
                 Age = 3,
                 Name = "Victor3",
-                ClassNumber = 2,
+                ClassNumber = null,
                 Long2 = 3L,
                 Decimal2 = 4M,
                 Byte2 = 2,
@@ -46,15 +45,24 @@ namespace UT.VIC.DataAccess.Core.Converter
             },
         };
 
-        [Fact]
+        public EntityConverterTest()
+        {
+            var i = new ServiceCollection()
+                .UseVicData()
+                .BuildServiceProvider();
+            i.GetRequiredService<ServiceLocator>();
+        }
+
+        [Fact(DisplayName = "EntityConvert")]
         public void TestEntityConvert()
         {
+            var converter = ServiceLocator.Current.GetRequiredService<IEntityConverter<Student>>();
             var type = typeof(Student);
             var reader = new ListDataReader<Student>(_Students);
             foreach (var item in _Students)
             {
                 reader.Read();
-                Student s = _Converter.Convert<Student>(reader);
+                Student s = converter.Convert(reader);
                 Assert.Equal(item.ClassNumber, s.ClassNumber);
                 Assert.Equal(item.Age, s.Age);
                 Assert.Equal(item.Bool, s.Bool);

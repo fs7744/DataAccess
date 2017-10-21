@@ -45,5 +45,17 @@ namespace VIC.DataAccess.Abstraction
         Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken, dynamic parameter = null);
 
         IDbTransaction BeginTransaction(IsolationLevel level = IsolationLevel.ReadUncommitted);
+
+        DbDataReader ExecuteDataReader(dynamic parameter = null, CommandBehavior behavior = CommandBehavior.Default);
+
+        T ExecuteEntity<T>(dynamic paramter = null);
+
+        List<T> ExecuteEntityList<T>(dynamic paramter = null);
+
+        IMultipleReader ExecuteMultiple(dynamic parameter = null);
+
+        T ExecuteScalar<T>(dynamic paramter = null);
+
+        int ExecuteNonQuery(dynamic parameter = null);
     }
 }
