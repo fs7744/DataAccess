@@ -9,6 +9,7 @@ using VIC.DataAccess;
 using VIC.DataAccess.Core;
 using VIC.DataAccess.Core.Converter;
 using Xunit;
+using System.Linq;
 
 namespace UT.VIC.DataAccess.Core
 {
@@ -69,6 +70,8 @@ namespace UT.VIC.DataAccess.Core
 
         public class TestDbParameterCollection : DbParameterCollection
         {
+            List<DbParameter> PS = new List<DbParameter>();
+
             public override int Count
             {
                 get
@@ -92,6 +95,10 @@ namespace UT.VIC.DataAccess.Core
 
             public override void AddRange(Array values)
             {
+                foreach (DbParameter item in values)
+                {
+                    PS.Add(item);
+                }
             }
 
             public override void Clear()
@@ -151,7 +158,7 @@ namespace UT.VIC.DataAccess.Core
 
             protected override DbParameter GetParameter(string parameterName)
             {
-                throw new NotImplementedException();
+                return PS.FirstOrDefault(i => i.ParameterName == parameterName);
             }
 
             protected override DbParameter GetParameter(int index)
@@ -172,6 +179,8 @@ namespace UT.VIC.DataAccess.Core
 
         public class TestDbConnection : DbConnection
         {
+            public TestDbCommand Command;
+
             public override string ConnectionString { get; set; }
 
             public override string Database { get { return ConnectionString; } }
@@ -214,7 +223,8 @@ namespace UT.VIC.DataAccess.Core
 
             protected override DbCommand CreateDbCommand()
             {
-                return new TestDbCommand();
+                Command = new TestDbCommand();
+                return Command;
             }
         }
 
@@ -232,7 +242,7 @@ namespace UT.VIC.DataAccess.Core
 
             protected override DbConnection DbConnection { get; set; }
 
-            protected override DbParameterCollection DbParameterCollection { get { return new TestDbParameterCollection(); } }
+            protected override DbParameterCollection DbParameterCollection { get; } = new TestDbParameterCollection();
 
             protected override DbTransaction DbTransaction { get; set; }
 
@@ -271,13 +281,16 @@ namespace UT.VIC.DataAccess.Core
 
         public class TestDataCommand : DataCommand
         {
+            public TestDbConnection Connection;
+
             public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter())
             {
             }
 
             protected override DbConnection CreateConnection(string connectionString)
             {
-                return new TestDbConnection();
+                Connection = new TestDbConnection();
+                return Connection;
             }
         }
 
@@ -355,6 +368,17 @@ namespace UT.VIC.DataAccess.Core
         }
 
         [Fact]
+        public void TestExecuteDataReader()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var reader = command.ExecuteDataReader(_Students[0]);
+                Assert.IsType<SetDataReader<Student>>(reader);
+            }
+        }
+
+        [Fact]
         public async void TestExecuteEntityAsync()
         {
             using (var command = new TestDataCommand())
@@ -366,12 +390,38 @@ namespace UT.VIC.DataAccess.Core
         }
 
         [Fact]
+        public void TestExecuteEntity()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var s = command.ExecuteEntity<Student>(_Students[1]);
+                _Test(_Students[0], s);
+            }
+        }
+
+        [Fact]
         public async void TestExecuteEntityListAsync()
         {
             using (var command = new TestDataCommand())
             {
                 command.ConnectionString = "sqlConnectionString";
                 var ss = await command.ExecuteEntityListAsync<Student>(_Students[1]);
+                Assert.Equal(_Students.Count, ss.Count);
+                for (int i = 0; i < ss.Count; i++)
+                {
+                    _Test(_Students[i], ss[i]);
+                }
+            }
+        }
+
+        [Fact]
+        public void TestExecuteEntityList()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var ss = command.ExecuteEntityList<Student>(_Students[1]);
                 Assert.Equal(_Students.Count, ss.Count);
                 for (int i = 0; i < ss.Count; i++)
                 {
@@ -403,6 +453,28 @@ namespace UT.VIC.DataAccess.Core
         }
 
         [Fact]
+        public void TestExecuteMultipleReader()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                using (var reader = command.ExecuteMultiple(_Students[2]))
+                {
+                    var s =  reader.ExecuteEntity<Student>();
+                    _Test(_Students[0], s);
+                    var ss =  reader.ExecuteEntityList<Student>();
+                    Assert.Equal(_Students.Count, ss.Count);
+                    for (int i = 0; i < ss.Count; i++)
+                    {
+                        _Test(_Students[i], ss[i]);
+                    }
+                    var s1 =  reader.ExecuteScalar<DateTime?>();
+                    Assert.Equal(_Students[0].DateTime2, s1);
+                }
+            }
+        }
+
+        [Fact]
         public async void TestExecuteNonQueryAsync()
         {
             using (var command = new TestDataCommand())
@@ -410,6 +482,38 @@ namespace UT.VIC.DataAccess.Core
                 command.ConnectionString = "sqlConnectionString";
                 var num = await command.ExecuteNonQueryAsync(_Students[2]);
                 Assert.Equal(3, num);
+            }
+        }
+
+        [Fact]
+        public void TestExecuteNonQuery()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var num = command.ExecuteNonQuery(_Students[2]);
+                Assert.Equal(3, num);
+                num = 0;
+                num = command.ExecuteNonQuery();
+                Assert.Equal(3, num);
+            }
+        }
+
+        [Fact]
+        public void TestExecuteNonQueryList()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.Text = "update top(1) Name = @Name where Age = @Age";
+                command.ConnectionString = "sqlConnectionString";
+                var num = command.ExecuteNonQuery(_Students);
+                var com = command.Connection.Command;
+                Assert.Equal("update top(1) Name = @Name0 where Age = @Age0;update top(1) Name = @Name1 where Age = @Age1;update top(1) Name = @Name2 where Age = @Age2;", com.CommandText);
+                for (int i = 0; i < _Students.Count; i++)
+                {
+                    Assert.Equal(_Students[i].Name, com.Parameters[$"@Name{i}"].Value);
+                    Assert.Equal(_Students[i].Age, com.Parameters[$"@Age{i}"].Value);
+                }
             }
         }
     }

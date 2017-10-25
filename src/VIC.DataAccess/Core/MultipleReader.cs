@@ -102,6 +102,48 @@ namespace VIC.DataAccess.Core
             Dispose(true);
         }
 
+        public List<T> ExecuteEntityList<T>()
+        {
+            var list = new List<T>();
+            if (_Reader.HasRows)
+            {
+                while (_Reader.Read())
+                {
+                    list.Add(_EC.Convert<T>(_Reader));
+                }
+                _Reader.NextResult();
+            }
+            return list;
+        }
+
+        public T ExecuteEntity<T>()
+        {
+            var result = default(T);
+            if (_Reader.HasRows)
+            {
+                if (_Reader.Read())
+                {
+                    result = _EC.Convert<T>(_Reader);
+                }
+                 _Reader.NextResult();
+            }
+            return result;
+        }
+
+        public T ExecuteScalar<T>()
+        {
+            var result = default(T);
+            if (_Reader.HasRows)
+            {
+                if (_Reader.Read())
+                {
+                    result = _SC.Convert<T>(_Reader);
+                }
+                _Reader.NextResult();
+            }
+            return result;
+        }
+
         #endregion IDisposable Support
     }
 }
