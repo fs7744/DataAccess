@@ -40,9 +40,17 @@ namespace VIC.DataAccess.Abstraction
 
         Task<IMultipleReader> ExecuteMultipleAsync(CancellationToken cancellationToken, dynamic parameter = null);
 
-        Task<int> ExecuteNonQueryAsync(dynamic parameter = null);
+        Task<int> ExecuteNonQueryAsync();
 
-        Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken, dynamic parameter = null);
+        Task<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class;
+
+        Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class;
+
+        Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class;
+
+        Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class;
+
+        Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class;
 
         IDbTransaction BeginTransaction(IsolationLevel level = IsolationLevel.ReadUncommitted);
 
@@ -56,6 +64,12 @@ namespace VIC.DataAccess.Abstraction
 
         T ExecuteScalar<T>(dynamic paramter = null);
 
-        int ExecuteNonQuery(dynamic parameter = null);
+        int ExecuteNonQuery();
+
+        int ExecuteNonQuery<T>(T parameter = null) where T : class;
+
+        int ExecuteNonQuerys<T>(List<T> parameters = null, int batchSize = 200) where T : class;
+
+        void ExecuteBulkCopy<T>(List<T> data) where T : class;
     }
 }

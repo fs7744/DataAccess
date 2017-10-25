@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.2</Version>
+    <Version>2.0.6</Version>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Victor.X.Qu</Company>
     <Authors>Victor.X.Qu</Authors>
     <Description>dotnet core DataAccess Component : core</Description>
-    <PackageReleaseNotes>update for netstandard2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>add ExecuteNonQuerys&lt;T&gt;(List&lt;T&gt; parameters)</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
+    <AssemblyVersion>2.0.6.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

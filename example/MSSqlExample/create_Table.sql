@@ -7,3 +7,4 @@
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
+select * from [dbo].[Students]

@@ -18,7 +18,7 @@ namespace VIC.DataAccess.MSSql.Core
             return new SqlConnection(connectionString);
         }
 
-        public async Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class, new()
+        public async override Task ExecuteBulkCopyAsync<T>(List<T> data) 
         {
             var conn = _Conn as SqlConnection;
             await conn.OpenAsync();
@@ -28,6 +28,19 @@ namespace VIC.DataAccess.MSSql.Core
                 var reader = new BulkCopyDataReader<T>(data);
                 reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
                 await sqlBulkCopy.WriteToServerAsync(reader);
+            }
+        }
+
+        public override void ExecuteBulkCopy<T>(List<T> data)
+        {
+            var conn = _Conn as SqlConnection;
+            conn.Open();
+            using (var sqlBulkCopy = new SqlBulkCopy(conn))
+            {
+                sqlBulkCopy.DestinationTableName = Text;
+                var reader = new BulkCopyDataReader<T>(data);
+                reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
+                sqlBulkCopy.WriteToServer(reader);
             }
         }
     }

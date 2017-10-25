@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction;
@@ -48,6 +49,15 @@ namespace VIC.DataAccess.Core
             _PC = pc;
             _SC = sc;
             _EC = ec;
+        }
+
+        public IDbTransaction BeginTransaction(IsolationLevel level)
+        {
+            if (_Tran == null)
+            {
+                _Tran = _Conn.BeginTransaction(level);
+            }
+            return _Tran;
         }
 
         #region AsyncIDataCommand
@@ -118,25 +128,46 @@ namespace VIC.DataAccess.Core
             }
         }
 
-        public Task<int> ExecuteNonQueryAsync(dynamic parameter = null)
+        public Task<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class
         {
             return ExecuteNonQueryAsync(CancellationToken.None, parameter);
         }
 
-        public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken, dynamic parameter = null)
+        public Task<int> ExecuteNonQueryAsync()
+        {
+            DbParameter p = null;
+            return ExecuteNonQueryAsync(p);
+        }
+
+        public async Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class
         {
             DbCommand command = CreateCommand(parameter);
             await OpenAsync(cancellationToken);
             return await command.ExecuteNonQueryAsync(cancellationToken);
         }
 
-        public IDbTransaction BeginTransaction(IsolationLevel level)
+        public Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class
         {
-            if (_Tran == null)
+            return ExecuteNonQuerysAsync(CancellationToken.None, parameters, batchSize);
+        }
+
+        public async Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class
+        {
+            DbCommand command = CreateCommandByParam(i => { });
+            await OpenAsync(cancellationToken);
+            var total = 0;
+            foreach (var item in parameters.Page(batchSize))
             {
-                _Tran = _Conn.BeginTransaction(level);
+                command.Parameters.Clear();
+                SetParams(command, item.ToList());
+                total += await command.ExecuteNonQueryAsync(cancellationToken);
             }
-            return _Tran;
+            return total;
+        }
+
+        public virtual Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class
+        {
+            throw new NotImplementedException();
         }
 
         #endregion AsyncIDataCommand
@@ -172,7 +203,7 @@ namespace VIC.DataAccess.Core
 
         public IMultipleReader ExecuteMultiple(dynamic parameter = null)
         {
-            DbDataReader reader = GetDataReaderAsync(CommandBehavior.Default, parameter);
+            DbDataReader reader = GetDataReader(CommandBehavior.Default, parameter);
             return new MultipleReader(reader, _SC, _EC);
         }
 
@@ -213,15 +244,20 @@ namespace VIC.DataAccess.Core
 
         private void Open()
         {
-            _Conn.Open();
+            if (_Conn.State == ConnectionState.Closed || _Conn.State == ConnectionState.Broken)
+            {
+                _Conn.Open();
+            }
         }
 
         private Task OpenAsync(CancellationToken cancellationToken)
         {
-            return _Conn.OpenAsync(cancellationToken);
+            return _Conn.State == ConnectionState.Closed || _Conn.State == ConnectionState.Broken
+                ? _Conn.OpenAsync(cancellationToken)
+                : Task.CompletedTask;
         }
 
-        private DbCommand CreateCommand(dynamic parameter = null)
+        private DbCommand CreateCommandByParam(Action<DbCommand> setParams)
         {
             if (_Conn == null)
                 throw new ArgumentNullException(nameof(ConnectionString), "can't be null");
@@ -234,13 +270,50 @@ namespace VIC.DataAccess.Core
             {
                 command.Transaction = _Tran;
             }
-            if (parameter != null)
+            setParams(command);
+            return command;
+        }
+
+        private DbCommand CreateCommand(dynamic parameter = null)
+        {
+            return CreateCommandByParam(command =>
+            {
+                if (parameter != null)
+                {
+                    List<DbParameter> paramList = _PC.Convert(parameter.GetType(), parameter);
+                    SetSpecialParameters(paramList);
+                    command.Parameters.AddRange(paramList.ToArray());
+                }
+            });
+        }
+
+        private void SetParams<T>(DbCommand command, List<T> parameters = null) where T : class
+        {
+            if (parameters == null || parameters.Count <= 0) return;
+            var sb = new StringBuilder();
+            var paramLists = parameters.Select(parameter =>
             {
                 List<DbParameter> paramList = _PC.Convert(parameter.GetType(), parameter);
                 SetSpecialParameters(paramList);
-                command.Parameters.AddRange(paramList.ToArray());
+                return paramList;
+            }).ToArray();
+            var templateSB = new StringBuilder(Text);
+            var first = paramLists[0];
+            for (int i = 0; i < first.Count; i++)
+            {
+                var p = first[i];
+                templateSB.Replace(p.ParameterName, $"{p.ParameterName}{{0}}");
             }
-            return command;
+            templateSB.Append(";");
+            var template = templateSB.ToString();
+            for (int i = 0; i < paramLists.Length; i++)
+            {
+                var p = paramLists[i];
+                sb.AppendFormat(template, i);
+                p.ForEach(j => j.ParameterName = $"{j.ParameterName}{i}");
+                command.Parameters.AddRange(p.ToArray());
+            }
+            command.CommandText = sb.ToString();
         }
 
         private void SetSpecialParameters(List<DbParameter> paramList)
@@ -298,6 +371,38 @@ namespace VIC.DataAccess.Core
         public void Dispose()
         {
             Dispose(true);
+        }
+
+        public int ExecuteNonQuery()
+        {
+            DbParameter p = null;
+            return ExecuteNonQuery(p);
+        }
+
+        public int ExecuteNonQuery<T>(T parameter = null) where T : class
+        {
+            DbCommand command = CreateCommand(parameter);
+            Open();
+            return command.ExecuteNonQuery();
+        }
+
+        public int ExecuteNonQuerys<T>(List<T> parameters, int batchSize = 200) where T : class
+        {
+            DbCommand command = CreateCommandByParam(i => { });
+            Open();
+            return parameters.Page(batchSize)
+                .Select(i =>
+                {
+                    command.Parameters.Clear();
+                    SetParams(command, i.ToList());
+                    return command.ExecuteNonQuery();
+                })
+                .Sum();
+        }
+
+        public virtual void ExecuteBulkCopy<T>(List<T> data) where T : class
+        {
+            throw new NotImplementedException();
         }
 
         #endregion IDisposable Support

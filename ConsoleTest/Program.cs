@@ -9,8 +9,6 @@ using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Config;
 using VIC.DataAccess.MSSql;
 using System.Linq;
-using System.Xml.Serialization;
-using System.Collections;
 
 namespace MSSqlExample
 {
@@ -21,23 +19,16 @@ namespace MSSqlExample
 
         public static void Main(string[] args)
         {
-            typeof(Student).GetProperties()
-                .Where(i=> i.PropertyType.IsAssignableFrom(typeof(IEnumerable)) || i.PropertyType.IsAssignableFrom(typeof(IEnumerable<>)))
-                .ToList()
-                .ForEach(i => 
-                {
-                    Console.WriteLine($"{i.PropertyType} : {i.Name}");
-                });
-            Console.ReadLine();
-            //Init();
-
-            ////Test().Wait();
-            //Test2().Wait();
+            Init();
+            var command = _DB.GetCommand("SelectAllAge");
+            var num = command.ExecuteScalar<int?>();
+            //Test().Wait();
+            Test2().Wait();
         }
 
         public async static Task Test2()
         {
-            var count = 100;
+            var count = 800;
             var students = GenerateStudents(count);
             await ExecuteTimer("First clear", async () =>
             {
@@ -48,13 +39,13 @@ namespace MSSqlExample
             await ExecuteTimer("Insert", async () =>
             {
                 var command = _DB.GetCommand("Insert");
-                var s = command.ExecuteNonQuery(students);
+                var s = command.ExecuteNonQuerys(students, 400);
                 Console.WriteLine($"Insert count : {s}");
             });
             await ExecuteTimer("Update", async () =>
             {
                 var command = _DB.GetCommand("Update");
-                var s = command.ExecuteNonQuery(students);
+                var s = command.ExecuteNonQuerys(students, 400);
                 Console.WriteLine($"Update count : {s}");
             });
             await ExecuteTimer("Update2", async () =>

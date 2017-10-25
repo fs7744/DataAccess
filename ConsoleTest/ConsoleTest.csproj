@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>MSSqlExample</RootNamespace>
+    <AssemblyName>MSSqlExample</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\test\UT.VIC.DataAccess.Config\UT.VIC.DataAccess.Config.csproj" />
+    <ProjectReference Include="..\test\UT.VIC.DataAccess.MSSql\UT.VIC.DataAccess.MSSql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="db.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

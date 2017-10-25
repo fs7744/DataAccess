@@ -6,9 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="VIC.DataAccess.Config" Version="2.0.1" />
-    <PackageReference Include="VIC.DataAccess.MSSql" Version="2.0.1" />
-    <PackageReference Include="VIC.DataAccess" Version="2.0.1.1" />
+    <PackageReference Include="VIC.DataAccess.Config" Version="2.0.2" />
+    <PackageReference Include="VIC.DataAccess.MSSql" Version="2.0.4" />
+    <PackageReference Include="VIC.DataAccess" Version="2.0.4" />
+    <PackageReference Include="VIC.ObjectConfig" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -18,5 +18,11 @@ namespace VIC.DataAccess.Abstraction
         Task<T> ExecuteScalarAsync<T>();
 
         Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken);
+
+        List<T> ExecuteEntityList<T>();
+
+        T ExecuteEntity<T>();
+
+        T ExecuteScalar<T>();
     }
 }
