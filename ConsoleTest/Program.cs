@@ -20,7 +20,8 @@ namespace MSSqlExample
         public static void Main(string[] args)
         {
             Init();
-
+            var command = _DB.GetCommand("SelectAllAge");
+            var num = command.ExecuteScalar<int?>();
             //Test().Wait();
             Test2().Wait();
         }

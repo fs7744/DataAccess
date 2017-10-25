@@ -153,7 +153,7 @@ namespace VIC.DataAccess.Core
 
         public async Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class
         {
-            DbCommand command = CreateCommand(i => { });
+            DbCommand command = CreateCommandByParam(i => { });
             await OpenAsync(cancellationToken);
             var total = 0;
             foreach (var item in parameters.Page(batchSize))
@@ -257,7 +257,7 @@ namespace VIC.DataAccess.Core
                 : Task.CompletedTask;
         }
 
-        private DbCommand CreateCommand(Action<DbCommand> setParams)
+        private DbCommand CreateCommandByParam(Action<DbCommand> setParams)
         {
             if (_Conn == null)
                 throw new ArgumentNullException(nameof(ConnectionString), "can't be null");
@@ -276,7 +276,7 @@ namespace VIC.DataAccess.Core
 
         private DbCommand CreateCommand(dynamic parameter = null)
         {
-            return CreateCommand(command =>
+            return CreateCommandByParam(command =>
             {
                 if (parameter != null)
                 {
@@ -388,7 +388,7 @@ namespace VIC.DataAccess.Core
 
         public int ExecuteNonQuerys<T>(List<T> parameters, int batchSize = 200) where T : class
         {
-            DbCommand command = CreateCommand(i => { });
+            DbCommand command = CreateCommandByParam(i => { });
             Open();
             return parameters.Page(batchSize)
                 .Select(i =>
