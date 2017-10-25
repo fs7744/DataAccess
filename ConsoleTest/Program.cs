@@ -27,7 +27,7 @@ namespace MSSqlExample
 
         public async static Task Test2()
         {
-            var count = 100;
+            var count = 800;
             var students = GenerateStudents(count);
             await ExecuteTimer("First clear", async () =>
             {
@@ -38,13 +38,13 @@ namespace MSSqlExample
             await ExecuteTimer("Insert", async () =>
             {
                 var command = _DB.GetCommand("Insert");
-                var s = command.ExecuteNonQuery(students);
+                var s = command.ExecuteNonQuerys(students, 400);
                 Console.WriteLine($"Insert count : {s}");
             });
             await ExecuteTimer("Update", async () =>
             {
                 var command = _DB.GetCommand("Update");
-                var s = command.ExecuteNonQuery(students);
+                var s = command.ExecuteNonQuerys(students, 400);
                 Console.WriteLine($"Update count : {s}");
             });
             await ExecuteTimer("Update2", async () =>

@@ -46,9 +46,9 @@ namespace VIC.DataAccess.Abstraction
 
         Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class;
 
-        Task<int> ExecuteNonQueryAsync<T>(List<T> parameters = null) where T : class;
+        Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class;
 
-        Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, List<T> parameters = null) where T : class;
+        Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class;
 
         Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class;
 
@@ -68,7 +68,7 @@ namespace VIC.DataAccess.Abstraction
 
         int ExecuteNonQuery<T>(T parameter = null) where T : class;
 
-        int ExecuteNonQuery<T>(List<T> parameters = null) where T : class;
+        int ExecuteNonQuerys<T>(List<T> parameters = null, int batchSize = 200) where T : class;
 
         void ExecuteBulkCopy<T>(List<T> data) where T : class;
     }
