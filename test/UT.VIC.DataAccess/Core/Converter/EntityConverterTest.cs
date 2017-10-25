@@ -54,7 +54,7 @@ namespace UT.VIC.DataAccess.Core.Converter
             foreach (var item in _Students)
             {
                 reader.Read();
-                Student s = _Converter.Convert<Student>(reader);
+                Student s = _Converter.GetConverter<Student>(reader)(reader);
                 Assert.Equal(item.ClassNumber, s.ClassNumber);
                 Assert.Equal(item.Age, s.Age);
                 Assert.Equal(item.Bool, s.Bool);

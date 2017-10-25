@@ -1,9 +1,11 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data;
+using System.Data.Common;
 
 namespace VIC.DataAccess.Abstraction.Converter
 {
     public interface IEntityConverter
     {
-        dynamic Convert<T>(DbDataReader reader);
+        Func<IDataReader, T> GetConverter<T>(IDataReader reader);
     }
 }

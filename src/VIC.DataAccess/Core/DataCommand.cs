@@ -81,7 +81,7 @@ namespace VIC.DataAccess.Core
         {
             using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
             {
-                return await reader.ReadAsync(cancellationToken) ? _EC.Convert<T>(reader) : default(T);
+                return await reader.ReadAsync(cancellationToken) ? _EC.GetConverter<T>(reader)(reader) : default(T);
             }
         }
 
@@ -95,9 +95,10 @@ namespace VIC.DataAccess.Core
             using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleResult, cancellationToken, paramter))
             {
                 var list = new List<T>();
+                var converter = _EC.GetConverter<T>(reader);
                 while (await reader.ReadAsync(cancellationToken))
                 {
-                    list.Add(_EC.Convert<T>(reader));
+                    list.Add(converter(reader));
                 }
 
                 return list;
@@ -183,7 +184,7 @@ namespace VIC.DataAccess.Core
         {
             using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
             {
-                return reader.Read() ? _EC.Convert<T>(reader) : default(T);
+                return reader.Read() ? _EC.GetConverter<T>(reader)(reader) : default(T);
             }
         }
 
@@ -192,9 +193,10 @@ namespace VIC.DataAccess.Core
             using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
             {
                 var list = new List<T>();
+                var converter = _EC.GetConverter<T>(reader);
                 while (reader.Read())
                 {
-                    list.Add(_EC.Convert<T>(reader));
+                    list.Add(converter(reader));
                 }
 
                 return list;

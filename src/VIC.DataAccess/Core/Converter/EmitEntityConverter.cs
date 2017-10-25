@@ -3,31 +3,34 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace VIC.DataAccess.Core.Converter
 {
     public static class EmitEntityConverter<T>
     {
-        private static Func<IDataReader, T> cache;
-        private static readonly object _lock = new object();
+        private static ConcurrentDictionary<int, Func<IDataReader, T>> cache
+            = new ConcurrentDictionary<int, Func<IDataReader, T>>();
 
         private static readonly MethodInfo getItem = typeof(IDataRecord).GetProperties(BindingFlags.Instance | BindingFlags.Public)
                         .Where(p => p.GetIndexParameters().Length > 0 && p.GetIndexParameters()[0].ParameterType == typeof(int))
                         .Select(p => p.GetGetMethod()).First();
 
-        public static T Convert(IDataReader reader)
+        public static Func<IDataReader, T> GetConverter(IDataReader reader)
         {
-            if (cache == null)
+            var key = GetKey(reader);
+            return cache.GetOrAdd(key, k => CreateConverter(typeof(T), reader));
+        }
+
+        private static int GetKey(IDataReader reader)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < reader.FieldCount; i++)
             {
-                lock (_lock)
-                {
-                    if (cache == null)
-                    {
-                        cache = CreateConverter(typeof(T), reader);
-                    }
-                }
+                sb.Append(reader.GetName(i).ToLower());
             }
-            return cache(reader);
+            return sb.ToString().GetHashCode();
         }
 
         private static Func<IDataReader, T> CreateConverter(Type type, IDataReader reader)
