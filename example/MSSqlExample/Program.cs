@@ -9,6 +9,8 @@ using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Config;
 using VIC.DataAccess.MSSql;
 using System.Linq;
+using System.Xml.Serialization;
+using System.Collections;
 
 namespace MSSqlExample
 {
@@ -19,10 +21,18 @@ namespace MSSqlExample
 
         public static void Main(string[] args)
         {
-            Init();
+            typeof(Student).GetProperties()
+                .Where(i=> i.PropertyType.IsAssignableFrom(typeof(IEnumerable)) || i.PropertyType.IsAssignableFrom(typeof(IEnumerable<>)))
+                .ToList()
+                .ForEach(i => 
+                {
+                    Console.WriteLine($"{i.PropertyType} : {i.Name}");
+                });
+            Console.ReadLine();
+            //Init();
 
-            //Test().Wait();
-            Test2().Wait();
+            ////Test().Wait();
+            //Test2().Wait();
         }
 
         public async static Task Test2()
