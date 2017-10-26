@@ -142,9 +142,34 @@ Student s = await command.ExecuteEntityAsync<Student>(new { Name = "3" });
 
 ## Test performance
 
+### HasDB
+
 You can see the simple code in https://github.com/fs7744/DataAccess/blob/master/example/MSSqlExample
 
 ![](https://github.com/fs7744/DataAccess/blob/master/example/MSSqlExample/test.png?raw=true)
+
+### NoDB
+
+You can see the simple code in https://github.com/fs7744/DataAccess/blob/master/test/performance/DapperBenchmarks.cs
+
+``` ini
+
+BenchmarkDotNet=v0.10.9, OS=Windows 10 Threshold 2 (10.0.10586)
+Processor=Intel Core i7-6700 CPU 3.40GHz (Skylake), ProcessorCount=8
+Frequency=3328125 Hz, Resolution=300.4695 ns, Timer=TSC
+.NET Core SDK=2.0.2
+  [Host]     : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+  DefaultJob : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+
+
+```
+ |               Method |     Mean |     Error |    StdDev |    StdErr |      Min |       Q1 |   Median |       Q3 |      Max |  Op/s |   Gen 0 |   Gen 1 | Allocated |
+ |--------------------- |---------:|----------:|----------:|----------:|---------:|---------:|---------:|---------:|---------:|------:|--------:|--------:|----------:|
+ |               Dapper | 2.487 ms | 0.0097 ms | 0.0090 ms | 0.0023 ms | 2.472 ms | 2.480 ms | 2.487 ms | 2.495 ms | 2.505 ms | 402.1 | 23.4375 | 11.7188 |  110.7 KB |
+ |              VicData | 2.477 ms | 0.0217 ms | 0.0181 ms | 0.0050 ms | 2.457 ms | 2.461 ms | 2.476 ms | 2.488 ms | 2.524 ms | 403.7 | 27.3438 | 11.7188 | 112.37 KB |
+ |                Chloe | 2.522 ms | 0.0329 ms | 0.0292 ms | 0.0078 ms | 2.480 ms | 2.506 ms | 2.522 ms | 2.540 ms | 2.585 ms | 396.5 | 23.4375 | 11.7188 | 110.87 KB |
+ | VicDataOnlyConverter | 2.467 ms | 0.0174 ms | 0.0155 ms | 0.0041 ms | 2.444 ms | 2.458 ms | 2.464 ms | 2.478 ms | 2.502 ms | 405.4 | 27.3438 | 11.7188 | 112.28 KB |
+
 
 ## All package 
 * [VIC.ObjectConfig](https://www.nuget.org/packages/VIC.ObjectConfig/)

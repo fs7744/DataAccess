@@ -14,6 +14,12 @@ using System.Linq;
 using Vic.Data.Abstraction;
 using Chloe.Infrastructure;
 using Chloe.SqlServer;
+using VIC.DataAccess.MSSql;
+using VIC.DataAccess.MSSql.Core;
+using VIC.DataAccess.Abstraction.Converter;
+using VIC.DataAccess.Abstraction;
+using VIC.DataAccess.Core.Converter;
+using VIC.DataAccess.MSSql.Core.Converter;
 
 namespace performance
 {
@@ -152,22 +158,43 @@ namespace performance
     [MemoryDiagnoser]
     public class DapperBenchmarks
     {
-        private TestConnection connection = new TestConnection();
+        private static TestConnection connection = new TestConnection();
         private IEntityConverter<Student> converter;
         private TestIDbConnectionFactory testI;
         private MsSqlContext context;
+        private IServiceProvider sp;
         public DapperBenchmarks()
         {
             testI = new TestIDbConnectionFactory(connection);
             context = new MsSqlContext(testI);
-            var i = new ServiceCollection()
-                .UseVicData()
+            sp = new ServiceCollection()
+                .AddSingleton<IDbFuncNameConverter, DbFuncNameConverter>()
+                .AddSingleton<IDbTypeConverter, DbTypeConverter>()
+                .AddSingleton<IScalarConverter, ScalarConverter>()
+                .AddSingleton<IEntityConverter, EntityConverter>()
+                .AddSingleton<IParamConverter, MSSqlParamConverter>()
+                .AddTransient<IDataCommand, TestMSSqlDataCommand>()
                 .BuildServiceProvider();
-            i.GetRequiredService<ServiceLocator>();
-            converter = i.GetRequiredService<IEntityConverter<Student>>();
+            var com = sp.GetRequiredService<IDataCommand>();
+            com.ConnectionString = "te";
+            com.ExecuteEntityList<Student>();
+            //i.GetRequiredService<ServiceLocator>();
+            //converter = i.GetRequiredService<IEntityConverter<Student>>();
             connection.Query<Student>("").ToList();
-            connection.CreateCommand().ExecuteEntities<Student>().ToList();
+            //connection.CreateCommand().ExecuteEntities<Student>().ToList();
             context.SqlQuery<Student>("").ToList();
+        }
+
+        public class TestMSSqlDataCommand : MSSqlDataCommand
+        {
+            public TestMSSqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
+            {
+            }
+
+            protected override DbConnection CreateConnection(string connectionString)
+            {
+                return connection;
+            }
         }
 
         [Benchmark]
@@ -179,7 +206,10 @@ namespace performance
         [Benchmark]
         public void VicData()
         {
-            connection.CreateCommand().ExecuteEntities<Student>().ToList();
+            var com = sp.GetRequiredService<IDataCommand>();
+            com.ConnectionString = "te";
+            com.ExecuteEntityList<Student>();
+            //connection.CreateCommand().ExecuteEntities<Student>().ToList();
         }
 
         [Benchmark]
@@ -191,10 +221,13 @@ namespace performance
         [Benchmark]
         public void VicDataOnlyConverter()
         {
-            var reader = connection.CreateCommand().ExecuteReader();
+            var com = sp.GetRequiredService<IDataCommand>();
+            com.ConnectionString = "te";
+            var reader = com.ExecuteDataReader();
+            var converter = sp.GetRequiredService<IEntityConverter>().GetConverter<Student>(reader);
             while (reader.Read())
             {
-                converter.Convert(reader);
+                converter(reader);
             }
         }
     }

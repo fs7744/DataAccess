@@ -21,12 +21,5 @@ namespace VIC.DataAccess.MSSql
                 .AddSingleton<IParamConverter, MSSqlParamConverter>()
                 .AddTransient<IDataCommand, MSSqlDataCommand>();
         }
-
-        public static Task ExecuteBulkCopyAsync<T>(this IDataCommand command, List<T> data) where T : class, new()
-        {
-            var msCommand = command as MSSqlDataCommand;
-            if (msCommand == null) throw new ArgumentException("command is not MSSqlDataCommand");
-            return msCommand.ExecuteBulkCopyAsync(data);
-        }
     }
 }
