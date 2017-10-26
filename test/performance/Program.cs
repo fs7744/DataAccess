@@ -6,7 +6,7 @@ namespace performance
     {
         private static void Main(string[] args)
         {
-            //new DapperBenchmarks().Dapper();
+            //new DapperBenchmarks().VicData();
             BenchmarkRunner.Run<DapperBenchmarks>();
         }
     }

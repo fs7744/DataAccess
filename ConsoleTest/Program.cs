@@ -9,6 +9,9 @@ using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Config;
 using VIC.DataAccess.MSSql;
 using System.Linq;
+using System.Data.SqlClient;
+using System.Data;
+using System.Reflection;
 
 namespace MSSqlExample
 {
@@ -19,11 +22,43 @@ namespace MSSqlExample
 
         public static void Main(string[] args)
         {
-            Init();
+            var a = Assembly.GetAssembly(typeof(SqlDataAdapter))
+                .GetType("System.Data.SqlClient.SqlCommandSet");
+            a.ToString();
+            //ExecuteTimer("Batch", () =>
+            //{
+            //    DataTable t = new DataTable();
+            //    t.Columns.Add("@Name", typeof(string));
+            //    t.Columns.Add("@Id", typeof(int));
+            //    for (int i = 0; i < 500; i++)
+            //    {
+            //        var row = t.Rows.Add(i.ToString() + "T", i + 1);
+            //        row.AcceptChanges();
+            //        row.SetModified();
+            //    }
+            //    using (var c = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
+            //    {
+            //        c.Open();
+            //        var com = c.CreateCommand();
+            //        com.CommandText = "update top(1) [dbo].[Students]  set Name = @Name where Id = @Id";
+            //        var p = com.Parameters.Add("@Name", SqlDbType.VarChar);
+            //        p.SourceColumn = "@Name";
+            //        p = com.Parameters.Add("@Id", SqlDbType.Int);
+            //        p.SourceColumn = "@Id";
+            //        com.UpdatedRowSource = UpdateRowSource.None;
+            //        using (SqlDataAdapter a = new SqlDataAdapter())
+            //        {
+            //            a.UpdateBatchSize = 500;
+            //            a.UpdateCommand = com;
+            //            a.Update(t);
+            //        }
+            //    }
+            //});
+            //Init();
             //var command = _DB.GetCommand("SelectByName");
-            //var num = command.ExecuteEntityList<Student>(new { Id = new int[] { 1,3,5,7,9 } });
+            //var num = command.ExecuteEntityList<Student>(new { Id = new List<int>() { 1, 3, 5, 7, 9 } });
             //Test().Wait();
-            Test2().Wait();
+            //Test2().Wait();
         }
 
         public async static Task Test2()

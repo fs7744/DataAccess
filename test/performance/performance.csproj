@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Vic.Data.Extensions\Vic.Data.Extensions.csproj" />
+    <ProjectReference Include="..\UT.VIC.DataAccess.MSSql\UT.VIC.DataAccess.MSSql.csproj" />
   </ItemGroup>
 
 </Project>
