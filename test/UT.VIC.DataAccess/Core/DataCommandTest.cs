@@ -90,7 +90,8 @@ namespace UT.VIC.DataAccess.Core
 
             public override int Add(object value)
             {
-                throw new NotImplementedException();
+                PS.Add(value as DbParameter);
+                return 1;
             }
 
             public override void AddRange(Array values)
@@ -531,6 +532,26 @@ namespace UT.VIC.DataAccess.Core
                 {
                     Assert.Equal(_Students[i].Name, com.Parameters[$"@Name{i}"].Value);
                     Assert.Equal(_Students[i].Age, com.Parameters[$"@Age{i}"].Value);
+                }
+            }
+        }
+
+        [Fact]
+        public void TestInParams()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.Text = "update top(1) Name = @Name where Age in @Age";
+                command.ConnectionString = "sqlConnectionString";
+                var num = command.ExecuteNonQuery(new { Name = "1", Age = new List<int>() { 1,2,3} });
+                var com = command.Connection.Command;
+                Assert.Equal("update top(1) Name = @Name where Age in (@Age0,@Age1,@Age2)", com.CommandText);
+                Assert.Equal("1", com.Parameters["@Name"].Value);
+                for (int i = 0; i < 3; i++)
+                {
+                    var p = com.Parameters[$"@Age{i}"];
+                    Assert.Equal(i + 1, p.Value);
+                    Assert.Equal(DbType.Int32, p.DbType);
                 }
             }
         }
