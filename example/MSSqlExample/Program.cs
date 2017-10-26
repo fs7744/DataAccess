@@ -11,6 +11,7 @@ using VIC.DataAccess.MSSql;
 using System.Linq;
 using System.Xml.Serialization;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace MSSqlExample
 {
@@ -21,13 +22,19 @@ namespace MSSqlExample
 
         public static void Main(string[] args)
         {
-            typeof(Student).GetProperties()
-                .Where(i=> i.PropertyType.IsAssignableFrom(typeof(IEnumerable)) || i.PropertyType.IsAssignableFrom(typeof(IEnumerable<>)))
-                .ToList()
-                .ForEach(i => 
-                {
-                    Console.WriteLine($"{i.PropertyType} : {i.Name}");
-                });
+            var t = typeof(object).GetMethod("ToString");
+            var t0 = typeof(string).GetMethods().Where(i=> i.Name == "Concat" && i.GetParameters().Length == 2 && i.GetParameters().First().ParameterType == typeof(string)).ToList()[0];
+            var b = Expression.Call(t0, Expression.Constant("T"),
+                Expression.Call(Expression.Constant(1), t));
+            var c = Expression.Lambda<Func<string>>(b).Compile();
+            Console.WriteLine(c());
+            //typeof(Student).GetProperties()
+            //    .Where(i=> i.PropertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom( i.PropertyType))
+            //    .ToList()
+            //    .ForEach(i => 
+            //    {
+            //        Console.WriteLine($"{i.PropertyType.GetElementType()} : {i.Name}");
+            //    });
             Console.ReadLine();
             //Init();
 

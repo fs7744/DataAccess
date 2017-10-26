@@ -20,15 +20,15 @@ namespace MSSqlExample
         public static void Main(string[] args)
         {
             Init();
-            var command = _DB.GetCommand("SelectAllAge");
-            var num = command.ExecuteScalar<int?>();
+            //var command = _DB.GetCommand("SelectByName");
+            //var num = command.ExecuteEntityList<Student>(new { Id = new int[] { 1,3,5,7,9 } });
             //Test().Wait();
             Test2().Wait();
         }
 
         public async static Task Test2()
         {
-            var count = 800;
+            var count = 500;
             var students = GenerateStudents(count);
             await ExecuteTimer("First clear", async () =>
             {
@@ -50,13 +50,13 @@ namespace MSSqlExample
             });
             await ExecuteTimer("Update2", async () =>
             {
-                foreach (var item in students.Take(50))
+                foreach (var item in students.Take(100))
                 {
                     var command = _DB.GetCommand("Update");
                     var s = command.ExecuteNonQuery(item);
                 }
             });
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         private static async Task Test()

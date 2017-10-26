@@ -25,9 +25,10 @@ namespace VIC.DataAccess.Core
             var list = new List<T>();
             if (_Reader.HasRows)
             {
+                var converter = _EC.GetConverter<T>(_Reader);
                 while (await _Reader.ReadAsync(cancellationToken))
                 {
-                    list.Add(_EC.Convert<T>(_Reader));
+                    list.Add(converter(_Reader));
                 }
                 await _Reader.NextResultAsync(cancellationToken);
             }
@@ -51,7 +52,7 @@ namespace VIC.DataAccess.Core
             {
                 if (await _Reader.ReadAsync(cancellationToken))
                 {
-                    result = _EC.Convert<T>(_Reader);
+                    result = _EC.GetConverter<T>(_Reader)(_Reader);
                 }
                 await _Reader.NextResultAsync(cancellationToken);
             }
@@ -107,9 +108,10 @@ namespace VIC.DataAccess.Core
             var list = new List<T>();
             if (_Reader.HasRows)
             {
+                var converter = _EC.GetConverter<T>(_Reader);
                 while (_Reader.Read())
                 {
-                    list.Add(_EC.Convert<T>(_Reader));
+                    list.Add(converter(_Reader));
                 }
                 _Reader.NextResult();
             }
@@ -123,7 +125,7 @@ namespace VIC.DataAccess.Core
             {
                 if (_Reader.Read())
                 {
-                    result = _EC.Convert<T>(_Reader);
+                    result = _EC.GetConverter<T>(_Reader)(_Reader);
                 }
                  _Reader.NextResult();
             }

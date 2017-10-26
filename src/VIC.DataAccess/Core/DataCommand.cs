@@ -81,7 +81,7 @@ namespace VIC.DataAccess.Core
         {
             using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
             {
-                return await reader.ReadAsync(cancellationToken) ? _EC.Convert<T>(reader) : default(T);
+                return await reader.ReadAsync(cancellationToken) ? _EC.GetConverter<T>(reader)(reader) : default(T);
             }
         }
 
@@ -95,9 +95,10 @@ namespace VIC.DataAccess.Core
             using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleResult, cancellationToken, paramter))
             {
                 var list = new List<T>();
+                var converter = _EC.GetConverter<T>(reader);
                 while (await reader.ReadAsync(cancellationToken))
                 {
-                    list.Add(_EC.Convert<T>(reader));
+                    list.Add(converter(reader));
                 }
 
                 return list;
@@ -183,7 +184,7 @@ namespace VIC.DataAccess.Core
         {
             using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
             {
-                return reader.Read() ? _EC.Convert<T>(reader) : default(T);
+                return reader.Read() ? _EC.GetConverter<T>(reader)(reader) : default(T);
             }
         }
 
@@ -192,9 +193,10 @@ namespace VIC.DataAccess.Core
             using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
             {
                 var list = new List<T>();
+                var converter = _EC.GetConverter<T>(reader);
                 while (reader.Read())
                 {
-                    list.Add(_EC.Convert<T>(reader));
+                    list.Add(converter(reader));
                 }
 
                 return list;
@@ -280,11 +282,34 @@ namespace VIC.DataAccess.Core
             {
                 if (parameter != null)
                 {
-                    List<DbParameter> paramList = _PC.Convert(parameter.GetType(), parameter);
+                    var converter = _PC.GetConverter(parameter.GetType());
+                    List<DbParameter> paramList = converter.Item1(parameter);
                     SetSpecialParameters(paramList);
                     command.Parameters.AddRange(paramList.ToArray());
+                    IGrouping<string, DbParameter>[] paramLists = converter.Item2(parameter);
+                    if (paramLists.Length == 0) return;
+                    SetInParams(command, paramLists);
                 }
             });
+        }
+
+        private void SetInParams(DbCommand command, IGrouping<string, DbParameter>[] paramLists)
+        {
+            var templateSB = new StringBuilder(Text);
+            foreach (var item in paramLists)
+            {
+                var sb = new StringBuilder("(");
+                foreach (var p in item)
+                {
+                    sb.Append(p.ParameterName);
+                    command.Parameters.Add(p);
+                    sb.Append(",");
+                }
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append(")");
+                templateSB.Replace(item.Key, sb.ToString());
+            }
+            command.CommandText = templateSB.ToString();
         }
 
         private void SetParams<T>(DbCommand command, List<T> parameters = null) where T : class
@@ -293,7 +318,8 @@ namespace VIC.DataAccess.Core
             var sb = new StringBuilder();
             var paramLists = parameters.Select(parameter =>
             {
-                List<DbParameter> paramList = _PC.Convert(parameter.GetType(), parameter);
+                var converter = _PC.GetConverter(parameter.GetType());
+                List<DbParameter> paramList = converter.Item1(parameter);
                 SetSpecialParameters(paramList);
                 return paramList;
             }).ToArray();

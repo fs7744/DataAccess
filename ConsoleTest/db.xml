@@ -7,14 +7,14 @@
     <DbSql CommandName="SelectByName" Type="Text" ConnectionName="Test">
       <Text>
         <![CDATA[
-SELECT top 1
+SELECT 
     Id
     ,Age
     ,Name
     ,JoinDate
     ,[Money]
 FROM [dbo].[Students] WITH(NOLOCK)
-WHERE @Name = Name
+WHERE Id in @Id
       ]]>
       </Text>
       <PreParameters>
@@ -24,12 +24,13 @@ WHERE @Name = Name
     <DbSql CommandName="SelectAll" Type="Text" ConnectionName="Test">
       <Text>
         <![CDATA[
-SELECT
+SELECT top 1
     Id
     ,Age
     ,Name
     ,JoinDate
     ,[Money]
+    ,cast( 0 as bit) as bools
 FROM [dbo].[Students] WITH(NOLOCK)
       ]]>
       </Text>

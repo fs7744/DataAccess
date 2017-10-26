@@ -94,7 +94,7 @@ namespace UT.VIC.DataAccess.Core.Converter
                 .Where(i => i.CanRead).ToList();
             foreach (var item in _Students)
             {
-                var ds = _Converter.Convert(type, item);
+                var ds = _Converter.GetConverter(type).Item1(item);
                 Assert.Equal(ps.Count, ds.Count);
                 for (int i = 0; i < ps.Count; i++)
                 {
