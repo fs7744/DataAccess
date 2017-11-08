@@ -79,9 +79,16 @@ namespace VIC.DataAccess.Core
 
         public async Task<T> ExecuteEntityAsync<T>(CancellationToken cancellationToken, dynamic paramter = null)
         {
-            using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
+            try
             {
-                return await reader.ReadAsync(cancellationToken) ? _EC.GetConverter<T>(reader)(reader) : default(T);
+                using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
+                {
+                    return await reader.ReadAsync(cancellationToken) ? _EC.GetConverter<T>(reader)(reader) : default(T);
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -123,9 +130,16 @@ namespace VIC.DataAccess.Core
 
         public async Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken, dynamic paramter = null)
         {
-            using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
+            try
             {
-                return await reader.ReadAsync(cancellationToken) ? _SC.Convert<T>(reader) : default(T);
+                using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleRow, cancellationToken, paramter))
+                {
+                    return await reader.ReadAsync(cancellationToken) ? _SC.Convert<T>(reader) : default(T);
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -142,9 +156,16 @@ namespace VIC.DataAccess.Core
 
         public async Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class
         {
-            DbCommand command = CreateCommand(parameter);
-            await OpenAsync(cancellationToken);
-            return await command.ExecuteNonQueryAsync(cancellationToken);
+            try
+            {
+                DbCommand command = CreateCommand(parameter);
+                await OpenAsync(cancellationToken);
+                return await command.ExecuteNonQueryAsync(cancellationToken);
+            }
+            finally
+            {
+                Close();
+            }
         }
 
         public Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class
@@ -182,24 +203,38 @@ namespace VIC.DataAccess.Core
 
         public T ExecuteEntity<T>(dynamic paramter = null)
         {
-            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+            try
             {
-                return reader.Read() ? _EC.GetConverter<T>(reader)(reader) : default(T);
+                using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+                {
+                    return reader.Read() ? _EC.GetConverter<T>(reader)(reader) : default(T);
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
         public List<T> ExecuteEntityList<T>(dynamic paramter = null)
         {
-            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
+            try
             {
-                var list = new List<T>();
-                var converter = _EC.GetConverter<T>(reader);
-                while (reader.Read())
+                using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
                 {
-                    list.Add(converter(reader));
-                }
+                    var list = new List<T>();
+                    var converter = _EC.GetConverter<T>(reader);
+                    while (reader.Read())
+                    {
+                        list.Add(converter(reader));
+                    }
 
-                return list;
+                    return list;
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -211,9 +246,16 @@ namespace VIC.DataAccess.Core
 
         public T ExecuteScalar<T>(dynamic paramter = null)
         {
-            using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+            try
             {
-                return reader.Read() ? _SC.Convert<T>(reader) : default(T);
+                using (DbDataReader reader = GetDataReader(CommandBehavior.SingleRow, paramter))
+                {
+                    return reader.Read() ? _SC.Convert<T>(reader) : default(T);
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -221,7 +263,14 @@ namespace VIC.DataAccess.Core
         {
             DbCommand command = CreateCommand(parameter);
             Open();
-            return command.ExecuteNonQuery();
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                Close();
+            }
         }
 
         #endregion SyncIDataCommand
@@ -249,6 +298,14 @@ namespace VIC.DataAccess.Core
             if (_Conn.State == ConnectionState.Closed || _Conn.State == ConnectionState.Broken)
             {
                 _Conn.Open();
+            }
+        }
+
+        public void Close()
+        {
+            if (_Conn.State != ConnectionState.Closed)
+            {
+                _Conn.Close();
             }
         }
 
@@ -409,21 +466,35 @@ namespace VIC.DataAccess.Core
         {
             DbCommand command = CreateCommand(parameter);
             Open();
-            return command.ExecuteNonQuery();
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                Close();
+            }
         }
 
         public int ExecuteNonQuerys<T>(List<T> parameters, int batchSize = 200) where T : class
         {
             DbCommand command = CreateCommandByParam(i => { });
             Open();
-            return parameters.Page(batchSize)
-                .Select(i =>
-                {
-                    command.Parameters.Clear();
-                    SetParams(command, i.ToList());
-                    return command.ExecuteNonQuery();
-                })
-                .Sum();
+            try
+            {
+                return parameters.Page(batchSize)
+                    .Select(i =>
+                    {
+                        command.Parameters.Clear();
+                        SetParams(command, i.ToList());
+                        return command.ExecuteNonQuery();
+                    })
+                    .Sum();
+            }
+            finally
+            {
+                Close();
+            }
         }
 
         public virtual void ExecuteBulkCopy<T>(List<T> data) where T : class

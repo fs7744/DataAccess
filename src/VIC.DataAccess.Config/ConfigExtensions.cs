@@ -9,7 +9,12 @@ namespace VIC.DataAccess.Config
 {
     public static class ConfigExtensions
     {
-        public static IServiceCollection UseDataAccessConfig(this IServiceCollection service, string basePath, bool isWatch = false, DbConfig[] others = null, IConnectionStringProvider provider = null, params string[] xmlFiles)
+        public static IServiceCollection UseDataAccessConfig(this IServiceCollection service, string basePath, bool isWatch = false, DbConfig[] others = null, params string[] xmlFiles)
+        {
+            return service.UseDataAccessConfigByConnectionStringProvider(basePath, isWatch, others, null, xmlFiles);
+        }
+
+        public static IServiceCollection UseDataAccessConfigByConnectionStringProvider(this IServiceCollection service, string basePath, bool isWatch = false, DbConfig[] others = null, IConnectionStringProvider provider = null, params string[] xmlFiles)
         {
             var config = new PhysicalFileConfigBuilder()
                 .SetBasePath(basePath)
