@@ -38,7 +38,7 @@ namespace VIC.DataAccess.Core
 
         public string Text { get; set; }
 
-        public int Timeout { get; set; }
+        public int Timeout { get; set; } = 30;
 
         public CommandType Type { get; set; } = CommandType.Text;
 
