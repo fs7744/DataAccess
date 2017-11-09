@@ -71,5 +71,7 @@ namespace VIC.DataAccess.Abstraction
         int ExecuteNonQuerys<T>(List<T> parameters = null, int batchSize = 200) where T : class;
 
         void ExecuteBulkCopy<T>(List<T> data) where T : class;
+
+        void Close();
     }
 }

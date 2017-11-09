@@ -88,6 +88,7 @@ namespace VIC.DataAccess.Core
             {
                 if (disposing)
                 {
+                    _Reader.Close();
                     _Reader.Dispose();
                 }
 

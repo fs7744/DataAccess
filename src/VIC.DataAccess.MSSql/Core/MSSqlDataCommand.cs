@@ -18,16 +18,23 @@ namespace VIC.DataAccess.MSSql.Core
             return new SqlConnection(connectionString);
         }
 
-        public async override Task ExecuteBulkCopyAsync<T>(List<T> data) 
+        public async override Task ExecuteBulkCopyAsync<T>(List<T> data)
         {
             var conn = _Conn as SqlConnection;
             await conn.OpenAsync();
-            using (var sqlBulkCopy = new SqlBulkCopy(conn))
+            try
             {
-                sqlBulkCopy.DestinationTableName = Text;
-                var reader = new BulkCopyDataReader<T>(data);
-                reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
-                await sqlBulkCopy.WriteToServerAsync(reader);
+                using (var sqlBulkCopy = new SqlBulkCopy(conn))
+                {
+                    sqlBulkCopy.DestinationTableName = Text;
+                    var reader = new BulkCopyDataReader<T>(data);
+                    reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
+                    await sqlBulkCopy.WriteToServerAsync(reader);
+                }
+            }
+            finally
+            {
+                conn.Close();
             }
         }
 
@@ -35,12 +42,19 @@ namespace VIC.DataAccess.MSSql.Core
         {
             var conn = _Conn as SqlConnection;
             conn.Open();
-            using (var sqlBulkCopy = new SqlBulkCopy(conn))
+            try
             {
-                sqlBulkCopy.DestinationTableName = Text;
-                var reader = new BulkCopyDataReader<T>(data);
-                reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
-                sqlBulkCopy.WriteToServer(reader);
+                using (var sqlBulkCopy = new SqlBulkCopy(conn))
+                {
+                    sqlBulkCopy.DestinationTableName = Text;
+                    var reader = new BulkCopyDataReader<T>(data);
+                    reader.ColumnMappings.ForEach(i => sqlBulkCopy.ColumnMappings.Add(i));
+                    sqlBulkCopy.WriteToServer(reader);
+                }
+            }
+            finally
+            {
+                conn.Close();
             }
         }
     }

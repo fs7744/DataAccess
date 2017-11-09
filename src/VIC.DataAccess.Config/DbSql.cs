@@ -19,7 +19,7 @@ namespace VIC.DataAccess.Config
         public List<Parameter> PreParameters { get; set; }
 
         [XmlAttribute]
-        public int Timeout { get; set; }
+        public int Timeout { get; set; } = 30;
 
         [XmlAttribute]
         public string ConnectionName { get; set; }

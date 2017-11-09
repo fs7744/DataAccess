@@ -138,7 +138,7 @@ namespace UT.VIC.DataAccess.Config
             command = db.GetCommand("select1");
             Assert.NotNull(command);
             Assert.Equal("test1", command.ConnectionString);
-            Assert.Equal(0, command.Timeout);
+            Assert.Equal(30, command.Timeout);
             Assert.Equal(CommandType.Text, command.Type);
             Assert.True(command.Text.Contains("1"));
             Assert.True(command.Text.Contains("2"));
@@ -148,7 +148,7 @@ namespace UT.VIC.DataAccess.Config
             command = db.GetCommand("select3");
             Assert.NotNull(command);
             Assert.Null(command.ConnectionString);
-            Assert.Equal(0, command.Timeout);
+            Assert.Equal(30, command.Timeout);
             Assert.Equal(CommandType.Text, command.Type);
             Assert.True(command.Text.Contains("1"));
             Assert.True(command.Text.Contains("2"));
@@ -195,7 +195,7 @@ namespace UT.VIC.DataAccess.Config
             command = db.GetCommand("select1");
             Assert.NotNull(command);
             Assert.Equal("test1", command.ConnectionString);
-            Assert.Equal(0, command.Timeout);
+            Assert.Equal(30, command.Timeout);
             Assert.Equal(CommandType.Text, command.Type);
             Assert.True(command.Text.Contains("1"));
             Assert.True(command.Text.Contains("2"));
@@ -204,7 +204,7 @@ namespace UT.VIC.DataAccess.Config
             command = db.GetCommand("select3");
             Assert.NotNull(command);
             Assert.Equal("sds", command.ConnectionString);
-            Assert.Equal(0, command.Timeout);
+            Assert.Equal(30, command.Timeout);
             Assert.Equal(CommandType.Text, command.Type);
             Assert.True(command.Text.Contains("1"));
             Assert.True(command.Text.Contains("2"));
