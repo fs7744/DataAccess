@@ -99,16 +99,23 @@ namespace VIC.DataAccess.Core
 
         public async Task<List<T>> ExecuteEntityListAsync<T>(CancellationToken cancellationToken, dynamic paramter = null)
         {
-            using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleResult, cancellationToken, paramter))
+            try
             {
-                var list = new List<T>();
-                var converter = _EC.GetConverter<T>(reader);
-                while (await reader.ReadAsync(cancellationToken))
+                using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleResult, cancellationToken, paramter))
                 {
-                    list.Add(converter(reader));
-                }
+                    var list = new List<T>();
+                    var converter = _EC.GetConverter<T>(reader);
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        list.Add(converter(reader));
+                    }
 
-                return list;
+                    return list;
+                }
+            }
+            finally
+            {
+                Close();
             }
         }
 
@@ -192,6 +199,32 @@ namespace VIC.DataAccess.Core
             throw new NotImplementedException();
         }
 
+        public Task<List<T>> ExecuteScalarListAsync<T>(dynamic paramter = null)
+        {
+            return ExecuteScalarListAsync<T>(CancellationToken.None);
+        }
+
+        public async Task<List<T>> ExecuteScalarListAsync<T>(CancellationToken cancellationToken, dynamic paramter = null)
+        {
+            try
+            {
+                using (DbDataReader reader = await GetDataReaderAsync(CommandBehavior.SingleResult, cancellationToken, paramter))
+                {
+                    var list = new List<T>();
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        list.Add(_SC.Convert<T>(reader));
+                    }
+
+                    return list;
+                }
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
         #endregion AsyncIDataCommand
 
         #region SyncIDataCommand
@@ -266,6 +299,27 @@ namespace VIC.DataAccess.Core
             try
             {
                 return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        public List<T> ExecuteScalarList<T>(dynamic paramter = null)
+        {
+            try
+            {
+                using (DbDataReader reader = GetDataReader(CommandBehavior.SingleResult, paramter))
+                {
+                    var list = new List<T>();
+                    while (reader.Read())
+                    {
+                        list.Add(_SC.Convert<T>(reader));
+                    }
+
+                    return list;
+                }
             }
             finally
             {

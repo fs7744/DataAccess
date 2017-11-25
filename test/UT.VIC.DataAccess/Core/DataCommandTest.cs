@@ -417,6 +417,36 @@ namespace UT.VIC.DataAccess.Core
         }
 
         [Fact]
+        public async void TestExecuteScalarListAsync()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var ss = await command.ExecuteScalarListAsync<DateTime>(_Students[1]);
+                Assert.Equal(_Students.Count, ss.Count);
+                for (int i = 0; i < ss.Count; i++)
+                {
+                    Assert.Equal(_Students[i].DateTime2, ss[i]);
+                }
+            }
+        }
+
+        [Fact]
+        public void TestExecuteScalarList()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.ConnectionString = "sqlConnectionString";
+                var ss = command.ExecuteScalarList<DateTime>(_Students[1]);
+                Assert.Equal(_Students.Count, ss.Count);
+                for (int i = 0; i < ss.Count; i++)
+                {
+                    Assert.Equal(_Students[i].DateTime2, ss[i]);
+                }
+            }
+        }
+
+        [Fact]
         public void TestExecuteEntityList()
         {
             using (var command = new TestDataCommand())
