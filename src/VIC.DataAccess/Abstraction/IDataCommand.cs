@@ -52,6 +52,10 @@ namespace VIC.DataAccess.Abstraction
 
         Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class;
 
+        Task<List<T>> ExecuteScalarListAsync<T>(CancellationToken cancellationToken, dynamic paramter = null);
+
+        Task<List<T>> ExecuteScalarListAsync<T>(dynamic paramter = null);
+
         IDbTransaction BeginTransaction(IsolationLevel level = IsolationLevel.ReadUncommitted);
 
         DbDataReader ExecuteDataReader(dynamic parameter = null, CommandBehavior behavior = CommandBehavior.Default);
@@ -73,5 +77,7 @@ namespace VIC.DataAccess.Abstraction
         void ExecuteBulkCopy<T>(List<T> data) where T : class;
 
         void Close();
+
+        List<T> ExecuteScalarList<T>(dynamic paramter = null);
     }
 }
