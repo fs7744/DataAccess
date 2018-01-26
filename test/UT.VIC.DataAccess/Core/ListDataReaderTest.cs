@@ -39,7 +39,7 @@ namespace UT.VIC.DataAccess.Core
 
     public class Student : People
     {
-        public DateTime DateTime2 { get; set; }
+        public DateTime? DateTime2 { get; set; }
 
         public int? ClassNumber { get; set; }
 
@@ -47,17 +47,17 @@ namespace UT.VIC.DataAccess.Core
 
         public decimal? Decimal2 { get; set; }
 
-        public double Double2 { get; set; }
+        public double? Double2 { get; set; }
 
-        public float Float2 { get; set; }
+        public float? Float2 { get; set; }
 
-        public short Short2 { get; set; }
+        public short? Short2 { get; set; }
 
-        public byte Byte2 { get; set; }
+        public byte? Byte2 { get; set; }
 
-        public Guid Guid2 { get; set; }
+        public Guid? Guid2 { get; set; }
 
-        public bool Bool2 { get; set; }
+        public bool? Bool2 { get; set; }
     }
 
     public class ListDataReaderTest
@@ -555,7 +555,7 @@ namespace UT.VIC.DataAccess.Core
                 var index = 0;
                 foreach (var p in ps)
                 {
-                    if (p.PropertyType == typeof(bool) || p.PropertyType == typeof(bool?))
+                    if (p.PropertyType == typeof(bool) || (p.PropertyType == typeof(bool?) && p.GetMethod.Invoke(st, new object[0]) != null))
                     {
                         Assert.Equal(p.GetMethod.Invoke(st, new object[0]), reader.GetBoolean(index));
                     }
@@ -585,7 +585,7 @@ namespace UT.VIC.DataAccess.Core
                 var index = 0;
                 foreach (var p in ps)
                 {
-                    if (p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?))
+                    if (p.PropertyType == typeof(DateTime) || (p.PropertyType == typeof(DateTime?) && p.GetMethod.Invoke(st, new object[0]) != null))
                     {
                         Assert.Equal(p.GetMethod.Invoke(st, new object[0]), reader.GetDateTime(index));
                     }

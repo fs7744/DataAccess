@@ -72,7 +72,7 @@ namespace VIC.DataAccess.Core.Converter
                                  Expression.Assign(Expression.Property(v, "SourceColumn"), Expression.Constant(DataParameter.ParameterNamePrefix + i.Name)),
                                  Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Call(concat, Expression.Constant(DataParameter.ParameterNamePrefix + i.Name), Expression.Call(index, toStr))),
                                  Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(_DC.Convert(realType))),
-                                 Expression.Assign(Expression.Property(v, "Value"), Expression.Property(enumeratorVar, "Current")),
+                                 Expression.Assign(Expression.Property(v, "Value"), Expression.Condition(Expression.Equal(Expression.Constant(null) ,Expression.Property(enumeratorVar, "Current")),Expression.Constant(DBNull.Value,TypeHelper.ObjectType),Expression.Property(enumeratorVar, "Current"))),
                                  Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
                                  Expression.Assign(Expression.Property(v, "Direction"),Expression.Constant(ParameterDirection.Input)),
                                  Expression.Call(vs,"Add",new Type[0] ,v),
@@ -106,12 +106,22 @@ namespace VIC.DataAccess.Core.Converter
             var vAssign = Expression.Assign(v, Expression.New(GetParameterType()));
             var ps = pis.Select(i =>
             {
+                var setValue = i.PropertyType.IsValueType
+                ? (Nullable.GetUnderlyingType(i.PropertyType) != null
+                    ? Expression.IfThenElse(Expression.Property(Expression.Property(p, i), "HasValue"),
+                        Expression.Assign(Expression.Property(v, "Value"), Expression.Convert(Expression.Property(Expression.Property(p, i), "Value"), TypeHelper.ObjectType)),
+                        Expression.Assign(Expression.Property(v, "Value"), Expression.Constant(DBNull.Value)))
+                    : (Expression)Expression.Assign(Expression.Property(v, "Value"), Expression.Convert(Expression.Property(p, i), TypeHelper.ObjectType)))
+                : Expression.IfThenElse(Expression.Equal(Expression.Property(p, i), Expression.Constant(null))
+                                    , Expression.Assign(Expression.Property(v, "Value"), Expression.Constant(DBNull.Value))
+                                    , Expression.Assign(Expression.Property(v, "Value"), Expression.Property(p, i)));
+
                 return Expression.Block(new ParameterExpression[] { v },
                      new Expression[] {
                                  vAssign,
                                  Expression.Assign(Expression.Property(v, "ParameterName"), Expression.Constant(DataParameter.ParameterNamePrefix + i.Name)),
-                                 Expression.Assign(Expression.Property(v, "DbType"),Expression.Constant(_DC.Convert(i.PropertyType))),
-                                 Expression.Assign(Expression.Property(v, "Value"),Expression.Convert(Expression.Property(p, i),TypeHelper.ObjectType)),
+                                 Expression.Assign(Expression.Property(v, "DbType"), Expression.Constant(_DC.Convert(i.PropertyType))),
+                                 setValue,
                                  Expression.Assign(Expression.Property(v, "IsNullable"),Expression.Constant(true)),
                                  Expression.Assign(Expression.Property(v, "Direction"),Expression.Constant(ParameterDirection.Input)),
                                  Expression.Call(vs,"Add",new Type[0] ,v)
