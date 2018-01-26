@@ -55,7 +55,7 @@ namespace UT.VIC.DataAccess.Core.Converter
             new Student()
             {
                 Age = 1,
-                Name = "Victor1",
+                Name = null,
                 ClassNumber = 2,
                 Long = 3L,
                 Decimal = 4M,
@@ -102,7 +102,8 @@ namespace UT.VIC.DataAccess.Core.Converter
                     Assert.Equal(ParameterDirection.Input, ds[i].Direction);
                     Assert.True(ds[i].IsNullable);
                     Assert.Equal("@" + ps[i].Name, ds[i].ParameterName);
-                    Assert.Equal(ps[i].GetMethod.Invoke(item, new object[0]), ds[i].Value);
+                    var value = ps[i].GetMethod.Invoke(item, new object[0]) ?? DBNull.Value;
+                    Assert.Equal(value , ds[i].Value);
                 }
             }
         }

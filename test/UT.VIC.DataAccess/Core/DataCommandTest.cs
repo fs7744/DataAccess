@@ -422,7 +422,7 @@ namespace UT.VIC.DataAccess.Core
             using (var command = new TestDataCommand())
             {
                 command.ConnectionString = "sqlConnectionString";
-                var ss = await command.ExecuteScalarListAsync<DateTime>(_Students[1]);
+                var ss = await command.ExecuteScalarListAsync<DateTime?>(_Students[1]);
                 Assert.Equal(_Students.Count, ss.Count);
                 for (int i = 0; i < ss.Count; i++)
                 {
@@ -437,7 +437,7 @@ namespace UT.VIC.DataAccess.Core
             using (var command = new TestDataCommand())
             {
                 command.ConnectionString = "sqlConnectionString";
-                var ss = command.ExecuteScalarList<DateTime>(_Students[1]);
+                var ss = command.ExecuteScalarList<DateTime?>(_Students[1]);
                 Assert.Equal(_Students.Count, ss.Count);
                 for (int i = 0; i < ss.Count; i++)
                 {
@@ -581,6 +581,33 @@ namespace UT.VIC.DataAccess.Core
                 {
                     var p = com.Parameters[$"@Age{i}"];
                     Assert.Equal(i + 1, p.Value);
+                    Assert.Equal(DbType.Int32, p.DbType);
+                }
+            }
+        }
+
+        [Fact]
+        public void TestInParamsNullable()
+        {
+            using (var command = new TestDataCommand())
+            {
+                command.Text = "update top(1) Name = @Name where Age in @Age";
+                command.ConnectionString = "sqlConnectionString";
+                var num = command.ExecuteNonQuery(new { Name = "1", Age = new List<int?>() { 1, 2, null } });
+                var com = command.Connection.Command;
+                Assert.Equal("update top(1) Name = @Name where Age in (@Age0,@Age1,@Age2)", com.CommandText);
+                Assert.Equal("1", com.Parameters["@Name"].Value);
+                for (int i = 0; i < 3; i++)
+                {
+                    var p = com.Parameters[$"@Age{i}"];
+                    if (i + 1 != 3)
+                    {
+                        Assert.Equal(i + 1, p.Value);
+                    }
+                    else
+                    {
+                        Assert.Equal(DBNull.Value, p.Value);
+                    }
                     Assert.Equal(DbType.Int32, p.DbType);
                 }
             }
