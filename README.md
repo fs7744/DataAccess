@@ -1,5 +1,7 @@
 # DataAccess
 
+[![Build status](https://ci.appveyor.com/api/projects/status/3ixccm610jbb7hgn/branch/master?svg=true)](https://ci.appveyor.com/project/fs7744/dataaccess/branch/master)
+
 Author: Victor.X.Qu
 
 Email: fs7744@hotmail.com
