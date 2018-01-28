@@ -8,11 +8,11 @@ image: Visual Studio 2017
 build_script:
 - cmd: dotnet publish -c Release
 test_script:
-- ps: ForEach ($folder in (Get-ChildItem -Path .\test\ -Directory -Filter *VIC*)) { dotnet test $folder.FullName -xml ($folder.FullName + "\xunit-results.xml") }
+- ps: ForEach ($folder in (Get-ChildItem -Path .\test\ -Directory -Filter *VIC*)) { dotnet test $folder.FullName }
 artifacts:
 - path: '\**\*.nupkg'
 deploy:
 - provider: Environment
-  name: AriesDoc
+  name: VicNuGet
   on:
     branch: master
