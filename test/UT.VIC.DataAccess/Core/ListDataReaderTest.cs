@@ -58,6 +58,8 @@ namespace UT.VIC.DataAccess.Core
         public Guid? Guid2 { get; set; }
 
         public bool? Bool2 { get; set; }
+
+        public char? Char { get; set; }
     }
 
     public class ListDataReaderTest
