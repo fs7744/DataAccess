@@ -201,7 +201,7 @@ namespace VIC.DataAccess.Core
 
         public Task<List<T>> ExecuteScalarListAsync<T>(dynamic paramter = null)
         {
-            return ExecuteScalarListAsync<T>(CancellationToken.None);
+            return ExecuteScalarListAsync<T>(CancellationToken.None, paramter);
         }
 
         public async Task<List<T>> ExecuteScalarListAsync<T>(CancellationToken cancellationToken, dynamic paramter = null)
