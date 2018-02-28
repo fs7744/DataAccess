@@ -12,8 +12,4 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta4-build3742" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Vic.Data.Extensions\Vic.Data.Extensions.csproj" />
-  </ItemGroup>
-
 </Project>
