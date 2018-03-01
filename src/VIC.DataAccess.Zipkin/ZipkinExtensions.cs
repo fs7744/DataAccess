@@ -2,7 +2,7 @@
 using AspectCore.Injector;
 using Microsoft.Extensions.DependencyInjection;
 using VIC.DataAccess.Aop;
-using VIC.DataAccess.zipkin.zipkin;
+using VIC.DataAccess.Zipkin;
 
 namespace VIC.DataAccess.Extensions
 {
@@ -12,8 +12,8 @@ namespace VIC.DataAccess.Extensions
         {
             return serviceContainer
                 .AddSingleton<IDataAccessTrace, DataAccessZipkinTrace>()
-                .ToServiceContainer()
-                .AddDataAccessAop();
+                .AddDataAccessAop()
+                .ToServiceContainer();
         }
     }
 }
