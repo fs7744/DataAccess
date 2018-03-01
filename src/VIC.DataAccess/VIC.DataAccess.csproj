@@ -8,7 +8,7 @@
     <Company>Victor.X.Qu</Company>
     <Authors>Victor.X.Qu</Authors>
     <Description>dotnet core DataAccess Component : core</Description>
-    <PackageReleaseNotes>fix bug about ExecuteScalarListAsync</PackageReleaseNotes>
+    <PackageReleaseNotes>add aop base on AspectCore</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/fs7744/DataAccess</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/fs7744/DataAccess/master/aataaccess.png</PackageIconUrl>
