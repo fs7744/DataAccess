@@ -12,9 +12,11 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.Data;
 using System.Reflection;
+using AspectCore.Extensions.Reflection;
 
 namespace MSSqlExample
 {
+
     public class Program
     {
         private static IServiceProvider _Provider;

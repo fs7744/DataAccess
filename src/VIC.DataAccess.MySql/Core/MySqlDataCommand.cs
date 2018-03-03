@@ -7,7 +7,7 @@ namespace VIC.DataAccess.MySql.Core
 {
     public class MySqlDataCommand : DataCommand
     {
-        public MySqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
+        public MySqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec, null)
         {
         }
 

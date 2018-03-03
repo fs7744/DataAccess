@@ -284,7 +284,7 @@ namespace UT.VIC.DataAccess.Core
         {
             public TestDbConnection Connection;
 
-            public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter())
+            public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter(), null)
             {
             }
 
@@ -527,42 +527,6 @@ namespace UT.VIC.DataAccess.Core
                 num = 0;
                 num = command.ExecuteNonQuery();
                 Assert.Equal(3, num);
-            }
-        }
-
-        [Fact]
-        public void TestExecuteNonQueryList()
-        {
-            using (var command = new TestDataCommand())
-            {
-                command.Text = "update top(1) Name = @Name where Age = @Age";
-                command.ConnectionString = "sqlConnectionString";
-                var num = command.ExecuteNonQuerys(_Students);
-                var com = command.Connection.Command;
-                Assert.Equal("update top(1) Name = @Name0 where Age = @Age0;update top(1) Name = @Name1 where Age = @Age1;update top(1) Name = @Name2 where Age = @Age2;", com.CommandText);
-                for (int i = 0; i < _Students.Count; i++)
-                {
-                    Assert.Equal(_Students[i].Name, com.Parameters[$"@Name{i}"].Value);
-                    Assert.Equal(_Students[i].Age, com.Parameters[$"@Age{i}"].Value);
-                }
-            }
-        }
-
-        [Fact]
-        public async void TestExecuteNonQueryAsyncList()
-        {
-            using (var command = new TestDataCommand())
-            {
-                command.Text = "update top(1) Name = @Name where Age = @Age";
-                command.ConnectionString = "sqlConnectionString";
-                var num = await command.ExecuteNonQuerysAsync(_Students);
-                var com = command.Connection.Command;
-                Assert.Equal("update top(1) Name = @Name0 where Age = @Age0;update top(1) Name = @Name1 where Age = @Age1;update top(1) Name = @Name2 where Age = @Age2;", com.CommandText);
-                for (int i = 0; i < _Students.Count; i++)
-                {
-                    Assert.Equal(_Students[i].Name, com.Parameters[$"@Name{i}"].Value);
-                    Assert.Equal(_Students[i].Age, com.Parameters[$"@Age{i}"].Value);
-                }
             }
         }
 

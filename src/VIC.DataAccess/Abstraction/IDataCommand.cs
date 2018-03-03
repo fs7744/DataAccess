@@ -40,15 +40,15 @@ namespace VIC.DataAccess.Abstraction
 
         Task<IMultipleReader> ExecuteMultipleAsync(CancellationToken cancellationToken, dynamic parameter = null);
 
-        Task<int> ExecuteNonQueryAsync();
+        ValueTask<int> ExecuteNonQueryAsync();
 
-        Task<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class;
+        ValueTask<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class;
 
-        Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class;
+        ValueTask<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class;
 
-        Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class;
+        ValueTask<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class;
 
-        Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class;
+        ValueTask<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class;
 
         Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class;
 
@@ -72,7 +72,7 @@ namespace VIC.DataAccess.Abstraction
 
         int ExecuteNonQuery<T>(T parameter = null) where T : class;
 
-        int ExecuteNonQuerys<T>(List<T> parameters = null, int batchSize = 200) where T : class;
+        int ExecuteNonQuerys<T>(List<T> parameters = null, int batchSize = 1000) where T : class;
 
         void ExecuteBulkCopy<T>(List<T> data) where T : class;
 

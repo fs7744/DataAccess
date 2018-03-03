@@ -16,6 +16,7 @@ namespace VIC.DataAccess.Core
         protected IParamConverter _PC;
         protected IScalarConverter _SC;
         protected IEntityConverter _EC;
+        private readonly IBatchUpdater batch;
         protected DbConnection _Conn;
         protected DbTransaction _Tran;
 
@@ -44,11 +45,12 @@ namespace VIC.DataAccess.Core
 
         public DataParameterCollection PreParameters { get; } = new DataParameterCollection();
 
-        public DataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec)
+        public DataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec, IBatchUpdater batch)
         {
             _PC = pc;
             _SC = sc;
             _EC = ec;
+            this.batch = batch;
         }
 
         public IDbTransaction BeginTransaction(IsolationLevel level)
@@ -150,18 +152,18 @@ namespace VIC.DataAccess.Core
             }
         }
 
-        public Task<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class
+        public ValueTask<int> ExecuteNonQueryAsync<T>(T parameter = null) where T : class
         {
             return ExecuteNonQueryAsync(CancellationToken.None, parameter);
         }
 
-        public Task<int> ExecuteNonQueryAsync()
+        public ValueTask<int> ExecuteNonQueryAsync()
         {
             DbParameter p = null;
             return ExecuteNonQueryAsync(p);
         }
 
-        public async Task<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class
+        public async ValueTask<int> ExecuteNonQueryAsync<T>(CancellationToken cancellationToken, T parameter = null) where T : class
         {
             try
             {
@@ -175,23 +177,15 @@ namespace VIC.DataAccess.Core
             }
         }
 
-        public Task<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class
+        public ValueTask<int> ExecuteNonQuerysAsync<T>(List<T> parameters = null, int batchSize = 200) where T : class
         {
             return ExecuteNonQuerysAsync(CancellationToken.None, parameters, batchSize);
         }
 
-        public async Task<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class
+        public async ValueTask<int> ExecuteNonQuerysAsync<T>(CancellationToken cancellationToken, List<T> parameters = null, int batchSize = 200) where T : class
         {
-            DbCommand command = CreateCommandByParam(i => { });
             await OpenAsync(cancellationToken);
-            var total = 0;
-            foreach (var item in parameters.Page(batchSize))
-            {
-                command.Parameters.Clear();
-                SetParams(command, item.ToList());
-                total += await command.ExecuteNonQueryAsync(cancellationToken);
-            }
-            return total;
+            return await batch.ExecuteNonQuerysAsync(PreParameters, _Conn, _Tran, Text, Timeout, parameters, batchSize, cancellationToken);
         }
 
         public virtual Task ExecuteBulkCopyAsync<T>(List<T> data) where T : class
@@ -395,8 +389,11 @@ namespace VIC.DataAccess.Core
                 {
                     var converter = _PC.GetConverter(parameter.GetType());
                     List<DbParameter> paramList = converter.Item1(parameter);
-                    SetSpecialParameters(paramList);
-                    command.Parameters.AddRange(paramList.ToArray());
+                    PreParameters.SetSpecialParameters(paramList);
+                    foreach (var item in paramList)
+                    {
+                        command.Parameters.Add(item);
+                    }
                     IGrouping<string, DbParameter>[] paramLists = converter.Item2(parameter);
                     if (paramLists.Length == 0) return;
                     SetInParams(command, paramLists);
@@ -421,55 +418,6 @@ namespace VIC.DataAccess.Core
                 templateSB.Replace(item.Key, sb.ToString());
             }
             command.CommandText = templateSB.ToString();
-        }
-
-        private void SetParams<T>(DbCommand command, List<T> parameters = null) where T : class
-        {
-            if (parameters == null || parameters.Count <= 0) return;
-            var sb = new StringBuilder();
-            var paramLists = parameters.Select(parameter =>
-            {
-                var converter = _PC.GetConverter(parameter.GetType());
-                List<DbParameter> paramList = converter.Item1(parameter);
-                SetSpecialParameters(paramList);
-                return paramList;
-            }).ToArray();
-            var templateSB = new StringBuilder(Text);
-            var first = paramLists[0];
-            for (int i = 0; i < first.Count; i++)
-            {
-                var p = first[i];
-                templateSB.Replace(p.ParameterName, $"{p.ParameterName}{{0}}");
-            }
-            templateSB.Append(";");
-            var template = templateSB.ToString();
-            for (int i = 0; i < paramLists.Length; i++)
-            {
-                var p = paramLists[i];
-                sb.AppendFormat(template, i);
-                p.ForEach(j => j.ParameterName = $"{j.ParameterName}{i}");
-                command.Parameters.AddRange(p.ToArray());
-            }
-            command.CommandText = sb.ToString();
-        }
-
-        private void SetSpecialParameters(List<DbParameter> paramList)
-        {
-            var sps = PreParameters;
-            if (sps.Count == 0) return;
-            foreach (var sp in sps.GetParams().Where(j => j != null))
-            {
-                var i = paramList.FirstOrDefault(j => j.ParameterName == sp.ParameterName);
-                if (i != null)
-                {
-                    i.DbType = sp.DbType;
-                    i.Size = sp.Size;
-                    i.IsNullable = sp.IsNullable;
-                    i.Direction = sp.Direction;
-                    i.Precision = sp.Precision;
-                    i.Scale = sp.Scale;
-                }
-            }
         }
 
         #endregion private
@@ -536,14 +484,7 @@ namespace VIC.DataAccess.Core
             Open();
             try
             {
-                return parameters.Page(batchSize)
-                    .Select(i =>
-                    {
-                        command.Parameters.Clear();
-                        SetParams(command, i.ToList());
-                        return command.ExecuteNonQuery();
-                    })
-                    .Sum();
+                return batch.ExecuteNonQuerys(PreParameters, _Conn, _Tran, Text, Timeout, parameters, batchSize);
             }
             finally
             {

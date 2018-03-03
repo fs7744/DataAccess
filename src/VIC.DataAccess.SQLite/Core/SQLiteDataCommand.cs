@@ -7,7 +7,7 @@ namespace VIC.DataAccess.SQLite.Core
 {
     public class SQLiteDataCommand : DataCommand
     {
-        public SQLiteDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
+        public SQLiteDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec, null)
         {
         }
 

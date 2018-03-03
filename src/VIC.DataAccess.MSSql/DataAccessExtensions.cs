@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core.Converter;
@@ -14,7 +11,10 @@ namespace VIC.DataAccess.MSSql
     {
         public static IServiceCollection UseDataAccess(this IServiceCollection service)
         {
-            return service.AddSingleton<IDbFuncNameConverter, DbFuncNameConverter>()
+            return (SqlClientSqlCommandSet.HasSqlCommandSet
+                ? service.AddSingleton<IBatchUpdater, SqlCommandSetBatchUpdater>()
+                : service.AddSingleton<IBatchUpdater, SqlStringBatchUpdater>())
+                .AddSingleton<IDbFuncNameConverter, DbFuncNameConverter>()
                 .AddSingleton<IDbTypeConverter, DbTypeConverter>()
                 .AddSingleton<IScalarConverter, ScalarConverter>()
                 .AddSingleton<IEntityConverter, EntityConverter>()

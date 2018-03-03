@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace VIC.DataAccess.Extensions
 {
@@ -16,7 +14,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetStringWithNull(record.GetOrdinal(name));
         }
-
 
         public static bool GetBoolean(this IDataRecord record, string name)
         {
@@ -33,7 +30,6 @@ namespace VIC.DataAccess.Extensions
             return record.GetBooleanWithNull(record.GetOrdinal(name));
         }
 
-
         public static byte GetByte(this IDataRecord record, string name)
         {
             return record.GetByte(record.GetOrdinal(name));
@@ -48,7 +44,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetByteWithNull(record.GetOrdinal(name));
         }
-
 
         public static char GetChar(this IDataRecord record, string name)
         {
@@ -65,7 +60,6 @@ namespace VIC.DataAccess.Extensions
             return record.GetCharWithNull(record.GetOrdinal(name));
         }
 
-
         public static DateTime GetDateTime(this IDataRecord record, string name)
         {
             return record.GetDateTime(record.GetOrdinal(name));
@@ -80,7 +74,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetDateTimeWithNull(record.GetOrdinal(name));
         }
-
 
         public static decimal GetDecimal(this IDataRecord record, string name)
         {
@@ -97,7 +90,6 @@ namespace VIC.DataAccess.Extensions
             return record.GetDecimalWithNull(record.GetOrdinal(name));
         }
 
-
         public static double GetDouble(this IDataRecord record, string name)
         {
             return record.GetDouble(record.GetOrdinal(name));
@@ -112,7 +104,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetDoubleWithNull(record.GetOrdinal(name));
         }
-
 
         public static float GetFloat(this IDataRecord record, string name)
         {
@@ -129,7 +120,6 @@ namespace VIC.DataAccess.Extensions
             return record.GetFloatWithNull(record.GetOrdinal(name));
         }
 
-
         public static Guid GetGuid(this IDataRecord record, string name)
         {
             return record.GetGuid(record.GetOrdinal(name));
@@ -144,7 +134,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetGuidWithNull(record.GetOrdinal(name));
         }
-
 
         public static short GetInt16(this IDataRecord record, string name)
         {
@@ -161,7 +150,6 @@ namespace VIC.DataAccess.Extensions
             return record.GetInt16WithNull(record.GetOrdinal(name));
         }
 
-
         public static int GetInt32(this IDataRecord record, string name)
         {
             return record.GetInt32(record.GetOrdinal(name));
@@ -176,7 +164,6 @@ namespace VIC.DataAccess.Extensions
         {
             return record.GetInt32WithNull(record.GetOrdinal(name));
         }
-
 
         public static long GetInt64(this IDataRecord record, string name)
         {

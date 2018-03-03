@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using VIC.DataAccess.Abstraction;
 using VIC.DataAccess.Abstraction.Converter;
 using VIC.DataAccess.Core;
 
@@ -9,7 +10,7 @@ namespace VIC.DataAccess.MSSql.Core
 {
     public class MSSqlDataCommand : DataCommand
     {
-        public MSSqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
+        public MSSqlDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec, IBatchUpdater batch) : base(pc, sc, ec, batch)
         {
         }
 

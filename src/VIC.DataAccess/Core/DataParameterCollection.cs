@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
 
 namespace VIC.DataAccess.Core
 {
@@ -59,6 +61,25 @@ namespace VIC.DataAccess.Core
         public IEnumerable<DataParameter> GetParams()
         {
             return _Params.Values;
+        }
+
+        public void SetSpecialParameters(List<DbParameter> paramList)
+        {
+            var sps = this;
+            if (sps.Count == 0) return;
+            foreach (var sp in sps.GetParams().Where(j => j != null))
+            {
+                var i = paramList.FirstOrDefault(j => j.ParameterName == sp.ParameterName);
+                if (i != null)
+                {
+                    i.DbType = sp.DbType;
+                    i.Size = sp.Size;
+                    i.IsNullable = sp.IsNullable;
+                    i.Direction = sp.Direction;
+                    i.Precision = sp.Precision;
+                    i.Scale = sp.Scale;
+                }
+            }
         }
     }
 }

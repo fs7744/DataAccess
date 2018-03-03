@@ -29,7 +29,7 @@ namespace UT.VIC.DataAccess.Config
 
     public class TestDataCommand : DataCommand
     {
-        public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter())
+        public TestDataCommand() : base(new TestParamConverter(new DbTypeConverter()), new ScalarConverter(), new EntityConverter(), null)
         {
         }
 

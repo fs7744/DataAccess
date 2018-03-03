@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspectCore.Extensions.Reflection" Version="0.3.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.0-preview1-26216-02" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\test\UT.VIC.DataAccess.Config\UT.VIC.DataAccess.Config.csproj" />
     <ProjectReference Include="..\test\UT.VIC.DataAccess.MSSql\UT.VIC.DataAccess.MSSql.csproj" />
   </ItemGroup>

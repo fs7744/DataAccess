@@ -7,7 +7,7 @@ namespace VIC.DataAccess.PostgreSQL.Core
 {
     public class PostgreSQLDataCommand : DataCommand
     {
-        public PostgreSQLDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec)
+        public PostgreSQLDataCommand(IParamConverter pc, IScalarConverter sc, IEntityConverter ec) : base(pc, sc, ec, null)
         {
         }
 
